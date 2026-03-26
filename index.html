@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECHO — 今日のあなたへ</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #000;
+    color: #fff;
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+  }
+  .birth-section {
+    padding: 32px 0;
+  }
+  .birth-label {
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: #888;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .birth-input {
+    background: #111;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 40px;
+    font-size: 16px;
+    width: 200px;
+    text-align: center;
+    outline: none;
+    margin-bottom: 16px;
+    display: block;
+    margin: 0 auto 16px;
+  }
+  .birth-btn {
+    background: #f0c040;
+    color: #000;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 40px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    letter-spacing: 2px;
+  }
+  .birth-btn:hover { opacity: 0.85; }
+
+  .result {
+    display: none;
+    animation: fadeIn 0.8s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .moon-emoji { font-size: 48px; margin-bottom: 8px; }
+  .date-str { font-size: 11px; color: #555; letter-spacing: 2px; margin-bottom: 24px; }
+
+  .bio-bar { margin: 24px 0; }
+  .bio-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 12px;
+  }
+  .bio-label { font-size: 11px; color: #888; width: 30px; text-align: right; }
+  .bio-track {
+    flex: 1;
+    height: 4px;
+    background: #222;
+    border-radius: 2px;
+    position: relative;
+  }
+  .bio-fill {
+    height: 100%;
+    border-radius: 2px;
+    position: absolute;
+    top: 0;
+    transition: width 1s ease;
+  }
+  .bio-val { font-size: 11px; color: #666; width: 36px; }
+
+  .mode-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #888;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .artist-name {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+  }
+  .mode-message {
+    font-size: 13px;
+    color: #aaa;
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+
+  .divider { border: none; border-top: 1px solid #222; margin: 24px 0; }
+
+  .song-title {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #555;
+    margin-bottom: 12px;
+  }
+  .lyrics {
+    font-size: 14px;
+    line-height: 2.2;
+    color: #ccc;
+    white-space: pre-line;
+  }
+  .artist-sig {
+    margin-top: 20px;
+    font-size: 12px;
+    color: #555;
+    letter-spacing: 2px;
+  }
+
+  .moon-msg {
+    font-size: 12px;
+    color: #666;
+    margin-top: 16px;
+    letter-spacing: 1px;
+  }
+
+  .reset-btn {
+    margin-top: 32px;
+    background: none;
+    border: 1px solid #333;
+    color: #555;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 11px;
+    cursor: pointer;
+    letter-spacing: 2px;
+  }
+  .reset-btn:hover { color: #888; border-color: #555; }
+
+  .num-row {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 20px;
+  }
+  .num-item { text-align: center; }
+  .num-val { font-size: 20px; font-weight: bold; }
+  .num-lbl { font-size: 10px; color: #555; letter-spacing: 1px; margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 生年月日入力 -->
+  <div class="birth-section" id="birthSection">
+    <div class="birth-label">あなたの生年月日</div>
+    <input type="date" class="birth-input" id="birthInput" max="2010-01-01" min="1930-01-01">
+    <br><br>
+    <button class="birth-btn" onclick="submit()">今日のあなたへ →</button>
+  </div>
+
+  <!-- 結果表示 -->
+  <div class="result" id="result">
+    <div class="moon-emoji" id="moonEmoji"></div>
+    <div class="date-str" id="dateStr"></div>
+
+    <div class="num-row">
+      <div class="num-item">
+        <div class="num-val" id="lifeNum"></div>
+        <div class="num-lbl">LIFE</div>
+      </div>
+      <div class="num-item">
+        <div class="num-val" id="todayNum"></div>
+        <div class="num-lbl">TODAY</div>
+      </div>
+    </div>
+
+    <div class="bio-bar">
+      <div class="bio-row">
+        <div class="bio-label">体</div>
+        <div class="bio-track"><div class="bio-fill" id="bioP"></div></div>
+        <div class="bio-val" id="bioPhysical"></div>
+      </div>
+      <div class="bio-row">
+        <div class="bio-label">心</div>
+        <div class="bio-track"><div class="bio-fill" id="bioE"></div></div>
+        <div class="bio-val" id="bioEmotional"></div>
+      </div>
+      <div class="bio-row">
+        <div class="bio-label">知</div>
+        <div class="bio-track"><div class="bio-fill" id="bioI"></div></div>
+        <div class="bio-val" id="bioIntellectual"></div>
+      </div>
+    </div>
+
+    <div class="mode-label" id="modeLabel"></div>
+    <div class="artist-name" id="artistName"></div>
+    <div class="mode-message" id="modeMessage"></div>
+    <div class="moon-msg" id="moonMsg"></div>
+
+    <hr class="divider">
+
+    <div class="song-title" id="songTitle"></div>
+    <div class="lyrics" id="lyrics"></div>
+    <div class="artist-sig" id="artistSig"></div>
+
+    <button class="reset-btn" onclick="reset()">別の日付で見る</button>
+  </div>
+
+</div>
+
+<script>
+function calcBio(birth) {
+  const days = Math.floor((Date.now() - new Date(birth).getTime()) / 86400000);
+  return {
+    physical:     Math.round(Math.sin(2 * Math.PI * days / 23) * 100),
+    emotional:    Math.round(Math.sin(2 * Math.PI * days / 28) * 100),
+    intellectual: Math.round(Math.sin(2 * Math.PI * days / 33) * 100),
+  };
+}
+
+function getMoon() {
+  const cycle = Math.floor(Date.now() / 86400000) % 29.53;
+  if (cycle < 1.5)  return { e: "🌑", n: "新月",    m: "種を蒔く日。静かに意図を立てろ。" };
+  if (cycle < 7.5)  return { e: "🌒", n: "三日月",  m: "動き出しの波に乗れ。小さくても前へ。" };
+  if (cycle < 14)   return { e: "🌓", n: "上弦の月", m: "迷いがあるなら決断の日だ。" };
+  if (cycle < 15.5) return { e: "🌕", n: "満月",    m: "感情が満ちる。解放して手放せ。" };
+  if (cycle < 22)   return { e: "🌖", n: "十六夜",  m: "受け取る時期。焦らなくていい。" };
+  if (cycle < 28)   return { e: "🌘", n: "下弦の月", m: "手放して整える。次への準備だ。" };
+  return { e: "🌑", n: "晦日月", m: "静寂の中に次の光がある。" };
+}
+
+function calcLife(birth) {
+  let s = birth.replace(/-/g,"").split("").map(Number).reduce((a,b)=>a+b,0);
+  while (s > 9 && s !== 11 && s !== 22) s = s.toString().split("").map(Number).reduce((a,b)=>a+b,0);
+  return s;
+}
+
+function getTodayNum() {
+  const t = new Date();
+  let s = (t.getFullYear().toString() + (t.getMonth()+1) + t.getDate()).split("").map(Number).reduce((a,b)=>a+b,0);
+  while (s > 9) s = s.toString().split("").map(Number).reduce((a,b)=>a+b,0);
+  return s;
+}
+
+function getMode(bio) {
+  const { physical: p, emotional: e, intellectual: i } = bio;
+  const avg = (p + e + i) / 3;
+  if (e < -40 && p < 0) return "heal";
+  if (e < -40) return "heal";
+  if (p < -40 && i < -40) return "heal";
+  if (avg > 40) return "peak";
+  if (p > 40 && e < 20) return "push";
+  if (i < -30) return "push";
+  if (e > 40) return "celebrate";
+  return "neutral";
+}
+
+const MODES = {
+  push:      { artist: "Sol",    label: "行動の日", color: "#f0c040", msg: "頭は要らない。体が動いてる。進め。" },
+  heal:      { artist: "Ren",    label: "癒しの日", color: "#8a5cf6", msg: "今日は何も要求しない。ただここにいる。" },
+  peak:      { artist: "圭光る", label: "ピークの日", color: "#40c0f0", msg: "今日は文明が動く日だ。" },
+  celebrate: { artist: "Luna",   label: "共鳴の日", color: "#f06090", msg: "感情が満ちている。その波を記録しておけ。" },
+  neutral:   { artist: "Key",    label: "思索の日", color: "#aaaaaa", msg: "静かな日だ。問いを立てるのに最適。" },
+};
+
+const LYRICS = {
+  push: {
+    title: "止まるな",
+    lines: `考えるな、今日は体が知っている
+頭が黙れ、足が動いている
+
+一歩が光になる
+一言が歴史になる
+今日だけの炎を
+誰かのために燃やせ
+
+止まるな
+止まるな
+お前が止まったら
+誰が動く`,
+  },
+  heal: {
+    title: "ここにいる",
+    lines: `今日は何もしなくていい
+ただ、ここにいてくれ
+
+言葉はいらない
+涙もいらない
+ただ、呼吸するだけで
+今日はそれでいい
+
+あなたはここにいる
+それだけで、十分だ`,
+  },
+  peak: {
+    title: "文明が動く朝",
+    lines: `今日、お前の細胞が叫んでいる
+この感覚を逃すな
+
+身体は満ちた
+魂は満ちた
+あとは動くだけだ
+
+文明は一人の覚悟から生まれる
+今日がその日だ`,
+  },
+  celebrate: {
+    title: "波を刻め",
+    lines: `感情が満ちている
+この波を無駄にするな
+
+その喜びを誰かに渡せ
+その愛を言葉にしろ
+今日だけの光を
+刻め、刻め、刻め`,
+  },
+  neutral: {
+    title: "問いの種",
+    lines: `静かな朝だ
+今日は考える日
+
+一つだけ問いを立てろ
+
+答えはいらない
+問いが種になる
+種が根になる
+根が文明になる
+
+今日、あなたはどこへ向かう？`,
+  },
+};
+
+function setBioBar(id, fillId, val) {
+  const sign = val >= 0 ? "+" : "";
+  document.getElementById(id).textContent = sign + val;
+  const fill = document.getElementById(fillId);
+  const pct = Math.abs(val) / 2;
+  fill.style.width = pct + "%";
+  fill.style.left = val >= 0 ? "50%" : (50 - pct) + "%";
+  fill.style.background = val >= 0 ? "#f0c040" : "#8a5cf6";
+}
+
+function submit() {
+  const birth = document.getElementById("birthInput").value;
+  if (!birth) { alert("生年月日を入力してください"); return; }
+  try { localStorage.setItem("echo_birth", birth); } catch {}
+
+  const bio = calcBio(birth);
+  const moon = getMoon();
+  const mode = getMode(bio);
+  const m = MODES[mode];
+  const lyr = LYRICS[mode];
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;
+
+  document.getElementById("moonEmoji").textContent = moon.e;
+  document.getElementById("dateStr").textContent = moon.n + " · " + dateStr;
+  document.getElementById("lifeNum").textContent = calcLife(birth);
+  document.getElementById("todayNum").textContent = getTodayNum();
+
+  setBioBar("bioPhysical", "bioP", bio.physical);
+  setBioBar("bioEmotional", "bioE", bio.emotional);
+  setBioBar("bioIntellectual", "bioI", bio.intellectual);
+
+  document.getElementById("modeLabel").textContent = m.label;
+  document.getElementById("artistName").textContent = m.artist;
+  document.getElementById("artistName").style.color = m.color;
+  document.getElementById("modeMessage").textContent = "「" + m.msg + "」";
+  document.getElementById("moonMsg").textContent = moon.m;
+
+  document.getElementById("songTitle").textContent = "🎵 「" + lyr.title + "」";
+  document.getElementById("lyrics").textContent = lyr.lines;
+  document.getElementById("artistSig").textContent = "— " + m.artist;
+
+  document.getElementById("birthSection").style.display = "none";
+  document.getElementById("result").style.display = "block";
+}
+
+function reset() {
+  document.getElementById("birthSection").style.display = "block";
+  document.getElementById("result").style.display = "none";
+}
+
+// 保存済みの生年月日があれば自動実行
+window.onload = function() {
+  try {
+    const saved = localStorage.getItem("echo_birth");
+    if (saved) {
+      document.getElementById("birthInput").value = saved;
+      submit();
+    }
+  } catch {}
+};
+</script>
+</body>
+</html>
