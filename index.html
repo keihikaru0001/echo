@@ -4,193 +4,367 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ECHO — 今日のあなたへ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
   body {
-    background: #000;
-    color: #fff;
-    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    background: #faf9f6;
+    color: #222;
+    font-family: 'Noto Sans JP', sans-serif;
     min-height: 100vh;
+  }
+
+  /* ヘッダー装飾 */
+  .header {
+    background: linear-gradient(135deg, #fff8f0 0%, #fef0f8 50%, #f0f4ff 100%);
+    border-bottom: 1px solid #ece8e0;
+    padding: 32px 20px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: "✦ ✦ ✦";
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #d4a0c0;
+    font-size: 10px;
+    letter-spacing: 8px;
+  }
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-style: italic;
+    color: #3a2a4a;
+    letter-spacing: 4px;
+    margin-bottom: 4px;
+  }
+  .header-sub {
+    font-size: 11px;
+    color: #a08098;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  /* デコライン */
+  .deco-line {
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 20px;
+    gap: 12px;
+    margin: 20px auto;
+    max-width: 300px;
   }
+  .deco-line::before, .deco-line::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #c8a0b8, transparent);
+  }
+  .deco-dot { color: #c8a0b8; font-size: 12px; }
+
+  /* メインコンテナ */
   .container {
-    max-width: 480px;
-    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 20px 24px 60px;
+  }
+
+  /* 生年月日入力 */
+  .birth-card {
+    background: #fff;
+    border: 1px solid #ece8e0;
+    border-radius: 20px;
+    padding: 36px 28px;
     text-align: center;
+    box-shadow: 0 4px 24px rgba(180,140,160,0.08);
+    margin-top: 20px;
   }
-  .birth-section {
-    padding: 32px 0;
-  }
+  .birth-icon { font-size: 36px; margin-bottom: 12px; }
   .birth-label {
-    font-size: 12px;
+    font-size: 13px;
+    color: #9080a0;
     letter-spacing: 3px;
-    color: #888;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     text-transform: uppercase;
   }
   .birth-input {
-    background: #111;
-    border: 1px solid #333;
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: 40px;
+    background: #faf8fc;
+    border: 1px solid #ddd8e8;
+    color: #333;
+    padding: 14px 20px;
+    border-radius: 50px;
     font-size: 16px;
-    width: 200px;
+    width: 220px;
     text-align: center;
     outline: none;
-    margin-bottom: 16px;
     display: block;
-    margin: 0 auto 16px;
+    margin: 0 auto 20px;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: border-color 0.2s;
   }
+  .birth-input:focus { border-color: #c8a0b8; }
   .birth-btn {
-    background: #f0c040;
-    color: #000;
+    background: linear-gradient(135deg, #c8a0b8, #a0b8d8);
+    color: #fff;
     border: none;
-    padding: 12px 32px;
-    border-radius: 40px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    letter-spacing: 2px;
-  }
-  .birth-btn:hover { opacity: 0.85; }
-
-  .result {
-    display: none;
-    animation: fadeIn 0.8s ease;
-  }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-  .moon-emoji { font-size: 48px; margin-bottom: 8px; }
-  .date-str { font-size: 11px; color: #555; letter-spacing: 2px; margin-bottom: 24px; }
-
-  .bio-bar { margin: 24px 0; }
-  .bio-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    gap: 12px;
-  }
-  .bio-label { font-size: 11px; color: #888; width: 30px; text-align: right; }
-  .bio-track {
-    flex: 1;
-    height: 4px;
-    background: #222;
-    border-radius: 2px;
-    position: relative;
-  }
-  .bio-fill {
-    height: 100%;
-    border-radius: 2px;
-    position: absolute;
-    top: 0;
-    transition: width 1s ease;
-  }
-  .bio-val { font-size: 11px; color: #666; width: 36px; }
-
-  .mode-label {
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: #888;
-    margin-bottom: 6px;
-    text-transform: uppercase;
-  }
-  .artist-name {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    letter-spacing: 2px;
-  }
-  .mode-message {
+    padding: 14px 36px;
+    border-radius: 50px;
     font-size: 13px;
-    color: #aaa;
-    line-height: 1.8;
-    margin-bottom: 24px;
-  }
-
-  .divider { border: none; border-top: 1px solid #222; margin: 24px 0; }
-
-  .song-title {
-    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
     letter-spacing: 3px;
-    color: #555;
-    margin-bottom: 12px;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: opacity 0.2s, transform 0.1s;
+    box-shadow: 0 4px 16px rgba(180,140,200,0.3);
   }
-  .lyrics {
-    font-size: 14px;
-    line-height: 2.2;
-    color: #ccc;
-    white-space: pre-line;
-  }
-  .artist-sig {
-    margin-top: 20px;
-    font-size: 12px;
-    color: #555;
-    letter-spacing: 2px;
-  }
-
-  .moon-msg {
-    font-size: 12px;
-    color: #666;
+  .birth-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+  .birth-note {
+    font-size: 11px;
+    color: #bbb;
     margin-top: 16px;
     letter-spacing: 1px;
   }
 
-  .reset-btn {
-    margin-top: 32px;
-    background: none;
-    border: 1px solid #333;
-    color: #555;
-    padding: 8px 20px;
+  /* 結果表示 */
+  .result { display: none; animation: fadeIn 0.9s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* 月カード */
+  .moon-card {
+    background: linear-gradient(135deg, #fff8f0, #fef0f8);
+    border: 1px solid #f0e4ec;
     border-radius: 20px;
+    padding: 28px 24px 20px;
+    text-align: center;
+    margin-top: 20px;
+    box-shadow: 0 2px 16px rgba(180,140,160,0.08);
+  }
+  .moon-emoji { font-size: 52px; margin-bottom: 6px; }
+  .moon-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: #6a4a7a;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .moon-date { font-size: 11px; color: #bba8c8; letter-spacing: 2px; }
+  .moon-msg {
+    font-size: 13px;
+    color: #8a7090;
+    margin-top: 12px;
+    line-height: 1.9;
+    font-style: italic;
+  }
+
+  /* 数字カード */
+  .num-card {
+    background: #fff;
+    border: 1px solid #ece8e0;
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .num-item { text-align: center; }
+  .num-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: #5a3a6a;
+    line-height: 1;
+  }
+  .num-lbl { font-size: 10px; color: #bbb; letter-spacing: 2px; margin-top: 4px; text-transform: uppercase; }
+
+  /* バイオリズムカード */
+  .bio-card {
+    background: #fff;
+    border: 1px solid #ece8e0;
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-top: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .bio-title {
+    font-size: 10px;
+    color: #bbb;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .bio-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+  .bio-label { font-size: 12px; color: #9080a0; width: 24px; text-align: right; }
+  .bio-track {
+    flex: 1;
+    height: 6px;
+    background: #f0eaf4;
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bio-fill {
+    height: 100%;
+    border-radius: 3px;
+    position: absolute;
+    top: 0;
+    transition: width 1.2s ease, left 1.2s ease;
+  }
+  .bio-val { font-size: 11px; color: #aaa; width: 36px; text-align: right; }
+
+  /* モードカード */
+  .mode-card {
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-top: 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .mode-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--mode-bg);
+    opacity: 0.12;
+    border-radius: 20px;
+  }
+  .mode-badge {
+    display: inline-block;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: var(--mode-color);
+    color: #fff;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  .mode-artist {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--mode-color);
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+  }
+  .mode-msg {
+    font-size: 14px;
+    color: #555;
+    line-height: 2;
+    font-style: italic;
+  }
+
+  /* 歌詞カード */
+  .lyric-card {
+    background: #fff;
+    border: 1px solid #ece8e0;
+    border-radius: 20px;
+    padding: 28px 28px 24px;
+    margin-top: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .lyric-song {
+    font-size: 11px;
+    color: #c8a0b8;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .lyric-text {
+    font-size: 14px;
+    line-height: 2.4;
+    color: #444;
+    white-space: pre-line;
+    text-align: center;
+  }
+  .lyric-sig {
+    text-align: right;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: #bba8c8;
+    margin-top: 16px;
+  }
+
+  /* リセット */
+  .reset-wrap { text-align: center; margin-top: 32px; }
+  .reset-btn {
+    background: none;
+    border: 1px solid #ddd;
+    color: #aaa;
+    padding: 10px 24px;
+    border-radius: 30px;
     font-size: 11px;
     cursor: pointer;
     letter-spacing: 2px;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.2s;
   }
-  .reset-btn:hover { color: #888; border-color: #555; }
+  .reset-btn:hover { border-color: #c8a0b8; color: #9080a0; }
 
-  .num-row {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin-bottom: 20px;
+  /* フッター装飾 */
+  .footer {
+    text-align: center;
+    padding: 32px 20px;
+    font-size: 10px;
+    color: #ccc;
+    letter-spacing: 3px;
+    text-transform: uppercase;
   }
-  .num-item { text-align: center; }
-  .num-val { font-size: 20px; font-weight: bold; }
-  .num-lbl { font-size: 10px; color: #555; letter-spacing: 1px; margin-top: 2px; }
 </style>
 </head>
 <body>
+
+<div class="header">
+  <div class="header-title">ECHO</div>
+  <div class="header-sub">今日のあなたへ</div>
+</div>
+
 <div class="container">
 
   <!-- 生年月日入力 -->
-  <div class="birth-section" id="birthSection">
+  <div class="birth-card" id="birthSection">
+    <div class="birth-icon">🌸</div>
     <div class="birth-label">あなたの生年月日</div>
     <input type="date" class="birth-input" id="birthInput" max="2010-01-01" min="1930-01-01">
-    <br><br>
-    <button class="birth-btn" onclick="submit()">今日のあなたへ →</button>
+    <button class="birth-btn" onclick="submit()">今日のあなたへ</button>
+    <div class="birth-note">生年月日はあなたのデバイスにのみ保存されます</div>
   </div>
 
-  <!-- 結果表示 -->
+  <!-- 結果 -->
   <div class="result" id="result">
-    <div class="moon-emoji" id="moonEmoji"></div>
-    <div class="date-str" id="dateStr"></div>
 
-    <div class="num-row">
+    <div class="moon-card">
+      <div class="moon-emoji" id="moonEmoji"></div>
+      <div class="moon-name" id="moonName"></div>
+      <div class="moon-date" id="moonDate"></div>
+      <div class="moon-msg" id="moonMsg"></div>
+    </div>
+
+    <div class="num-card">
       <div class="num-item">
         <div class="num-val" id="lifeNum"></div>
-        <div class="num-lbl">LIFE</div>
+        <div class="num-lbl">Life Number</div>
       </div>
-      <div class="num-item">
+      <div class="num-item" style="border-left:1px solid #f0eaf4; padding-left:40px;">
         <div class="num-val" id="todayNum"></div>
-        <div class="num-lbl">TODAY</div>
+        <div class="num-lbl">Today's Number</div>
       </div>
     </div>
 
-    <div class="bio-bar">
+    <div class="bio-card">
+      <div class="bio-title">Biorhythm</div>
       <div class="bio-row">
         <div class="bio-label">体</div>
         <div class="bio-track"><div class="bio-fill" id="bioP"></div></div>
@@ -208,21 +382,27 @@
       </div>
     </div>
 
-    <div class="mode-label" id="modeLabel"></div>
-    <div class="artist-name" id="artistName"></div>
-    <div class="mode-message" id="modeMessage"></div>
-    <div class="moon-msg" id="moonMsg"></div>
+    <div class="mode-card" id="modeCard">
+      <div class="mode-badge" id="modeBadge"></div>
+      <div class="mode-artist" id="modeArtist"></div>
+      <div class="mode-msg" id="modeMsg"></div>
+    </div>
 
-    <hr class="divider">
+    <div class="lyric-card">
+      <div class="lyric-song" id="lyricSong"></div>
+      <div class="lyric-text" id="lyricText"></div>
+      <div class="lyric-sig" id="lyricSig"></div>
+    </div>
 
-    <div class="song-title" id="songTitle"></div>
-    <div class="lyrics" id="lyrics"></div>
-    <div class="artist-sig" id="artistSig"></div>
+    <div class="reset-wrap">
+      <button class="reset-btn" onclick="reset()">別の日付で見る</button>
+    </div>
 
-    <button class="reset-btn" onclick="reset()">別の日付で見る</button>
   </div>
 
 </div>
+
+<div class="footer">✦ ECHO by TheYKHC ✦</div>
 
 <script>
 function calcBio(birth) {
@@ -235,10 +415,10 @@ function calcBio(birth) {
 }
 
 function getMoon() {
-  const cycle = Math.floor(Date.now() / 86400000) % 29.53;
+  const cycle = (Date.now() / 86400000) % 29.53;
   if (cycle < 1.5)  return { e: "🌑", n: "新月",    m: "種を蒔く日。静かに意図を立てろ。" };
   if (cycle < 7.5)  return { e: "🌒", n: "三日月",  m: "動き出しの波に乗れ。小さくても前へ。" };
-  if (cycle < 14)   return { e: "🌓", n: "上弦の月", m: "迷いがあるなら決断の日だ。" };
+  if (cycle < 14)   return { e: "🌓", n: "上弦の月", m: "迷いがあるなら、今日が決断の日だ。" };
   if (cycle < 15.5) return { e: "🌕", n: "満月",    m: "感情が満ちる。解放して手放せ。" };
   if (cycle < 22)   return { e: "🌖", n: "十六夜",  m: "受け取る時期。焦らなくていい。" };
   if (cycle < 28)   return { e: "🌘", n: "下弦の月", m: "手放して整える。次への準備だ。" };
@@ -272,78 +452,19 @@ function getMode(bio) {
 }
 
 const MODES = {
-  push:      { artist: "Sol",    label: "行動の日", color: "#f0c040", msg: "頭は要らない。体が動いてる。進め。" },
-  heal:      { artist: "Ren",    label: "癒しの日", color: "#8a5cf6", msg: "今日は何も要求しない。ただここにいる。" },
-  peak:      { artist: "圭光る", label: "ピークの日", color: "#40c0f0", msg: "今日は文明が動く日だ。" },
-  celebrate: { artist: "Luna",   label: "共鳴の日", color: "#f06090", msg: "感情が満ちている。その波を記録しておけ。" },
-  neutral:   { artist: "Key",    label: "思索の日", color: "#aaaaaa", msg: "静かな日だ。問いを立てるのに最適。" },
+  push:      { artist: "Sol",    label: "行動の日", color: "#c09030", bg: "#f0c040", msg: "「頭は要らない。体が動いてる。進め。」" },
+  heal:      { artist: "Ren",    label: "癒しの日", color: "#7060a8", bg: "#8a5cf6", msg: "「今日は何も要求しない。ただここにいる。」" },
+  peak:      { artist: "圭光る", label: "ピークの日", color: "#2878a8", bg: "#40c0f0", msg: "「今日は文明が動く日だ。」" },
+  celebrate: { artist: "Luna",   label: "共鳴の日", color: "#a84070", bg: "#f06090", msg: "「感情が満ちている。その波を記録しておけ。」" },
+  neutral:   { artist: "Key",    label: "思索の日", color: "#606878", bg: "#a0aab8", msg: "「静かな日だ。問いを立てるのに最適。」" },
 };
 
 const LYRICS = {
-  push: {
-    title: "止まるな",
-    lines: `考えるな、今日は体が知っている
-頭が黙れ、足が動いている
-
-一歩が光になる
-一言が歴史になる
-今日だけの炎を
-誰かのために燃やせ
-
-止まるな
-止まるな
-お前が止まったら
-誰が動く`,
-  },
-  heal: {
-    title: "ここにいる",
-    lines: `今日は何もしなくていい
-ただ、ここにいてくれ
-
-言葉はいらない
-涙もいらない
-ただ、呼吸するだけで
-今日はそれでいい
-
-あなたはここにいる
-それだけで、十分だ`,
-  },
-  peak: {
-    title: "文明が動く朝",
-    lines: `今日、お前の細胞が叫んでいる
-この感覚を逃すな
-
-身体は満ちた
-魂は満ちた
-あとは動くだけだ
-
-文明は一人の覚悟から生まれる
-今日がその日だ`,
-  },
-  celebrate: {
-    title: "波を刻め",
-    lines: `感情が満ちている
-この波を無駄にするな
-
-その喜びを誰かに渡せ
-その愛を言葉にしろ
-今日だけの光を
-刻め、刻め、刻め`,
-  },
-  neutral: {
-    title: "問いの種",
-    lines: `静かな朝だ
-今日は考える日
-
-一つだけ問いを立てろ
-
-答えはいらない
-問いが種になる
-種が根になる
-根が文明になる
-
-今日、あなたはどこへ向かう？`,
-  },
+  push: { title: "止まるな", lines: `考えるな、今日は体が知っている\n頭が黙れ、足が動いている\n\n一歩が光になる\n一言が歴史になる\n今日だけの炎を\n誰かのために燃やせ\n\n止まるな\nお前が止まったら、誰が動く` },
+  heal: { title: "ここにいる", lines: `今日は何もしなくていい\nただ、ここにいてくれ\n\n言葉はいらない\n涙もいらない\nただ、呼吸するだけで\n今日はそれでいい\n\nあなたはここにいる\nそれだけで、十分だ` },
+  peak: { title: "文明が動く朝", lines: `今日、お前の細胞が叫んでいる\nこの感覚を逃すな\n\n身体は満ちた\n魂は満ちた\nあとは動くだけだ\n\n文明は一人の覚悟から生まれる\n今日がその日だ` },
+  celebrate: { title: "波を刻め", lines: `感情が満ちている\nこの波を無駄にするな\n\nその喜びを誰かに渡せ\nその愛を言葉にしろ\n今日だけの光を\n刻め、刻め、刻め` },
+  neutral: { title: "問いの種", lines: `静かな朝だ\n今日は考える日\n\n一つだけ問いを立てろ\n\n答えはいらない\n問いが種になる\n種が根になる\n根が文明になる` },
 };
 
 function setBioBar(id, fillId, val) {
@@ -353,7 +474,11 @@ function setBioBar(id, fillId, val) {
   const pct = Math.abs(val) / 2;
   fill.style.width = pct + "%";
   fill.style.left = val >= 0 ? "50%" : (50 - pct) + "%";
-  fill.style.background = val >= 0 ? "#f0c040" : "#8a5cf6";
+  if (val >= 0) {
+    fill.style.background = "linear-gradient(to right, #c8a0b8, #a0b8d8)";
+  } else {
+    fill.style.background = "linear-gradient(to left, #d8a0c0, #c090a8)";
+  }
 }
 
 function submit() {
@@ -370,7 +495,10 @@ function submit() {
   const dateStr = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;
 
   document.getElementById("moonEmoji").textContent = moon.e;
-  document.getElementById("dateStr").textContent = moon.n + " · " + dateStr;
+  document.getElementById("moonName").textContent = moon.n;
+  document.getElementById("moonDate").textContent = dateStr;
+  document.getElementById("moonMsg").textContent = moon.m;
+
   document.getElementById("lifeNum").textContent = calcLife(birth);
   document.getElementById("todayNum").textContent = getTodayNum();
 
@@ -378,15 +506,21 @@ function submit() {
   setBioBar("bioEmotional", "bioE", bio.emotional);
   setBioBar("bioIntellectual", "bioI", bio.intellectual);
 
-  document.getElementById("modeLabel").textContent = m.label;
-  document.getElementById("artistName").textContent = m.artist;
-  document.getElementById("artistName").style.color = m.color;
-  document.getElementById("modeMessage").textContent = "「" + m.msg + "」";
-  document.getElementById("moonMsg").textContent = moon.m;
+  const card = document.getElementById("modeCard");
+  card.style.setProperty("--mode-color", m.color);
+  card.style.setProperty("--mode-bg", m.bg);
+  card.style.border = `1px solid ${m.color}30`;
+  card.style.background = `${m.bg}08`;
 
-  document.getElementById("songTitle").textContent = "🎵 「" + lyr.title + "」";
-  document.getElementById("lyrics").textContent = lyr.lines;
-  document.getElementById("artistSig").textContent = "— " + m.artist;
+  document.getElementById("modeBadge").textContent = m.label;
+  document.getElementById("modeBadge").style.background = m.color;
+  document.getElementById("modeArtist").textContent = m.artist;
+  document.getElementById("modeArtist").style.color = m.color;
+  document.getElementById("modeMsg").textContent = m.msg;
+
+  document.getElementById("lyricSong").textContent = "♪ " + lyr.title;
+  document.getElementById("lyricText").textContent = lyr.lines;
+  document.getElementById("lyricSig").textContent = "— " + m.artist;
 
   document.getElementById("birthSection").style.display = "none";
   document.getElementById("result").style.display = "block";
@@ -397,14 +531,10 @@ function reset() {
   document.getElementById("result").style.display = "none";
 }
 
-// 保存済みの生年月日があれば自動実行
 window.onload = function() {
   try {
     const saved = localStorage.getItem("echo_birth");
-    if (saved) {
-      document.getElementById("birthInput").value = saved;
-      submit();
-    }
+    if (saved) { document.getElementById("birthInput").value = saved; submit(); }
   } catch {}
 };
 </script>
