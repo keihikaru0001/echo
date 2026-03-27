@@ -221,7 +221,7 @@ const BASE = "https://base44.app/api/apps/69b1d589b12de5ad82cd58fb";
 let artists = [];
 let selectedArtist = null;
 let sessionId = "echo_" + Date.now();
-let birthDate = null;
+let birthDate = localStorage.getItem("echoBirthDate") || null;
 let hikariTotal = 0;
 let isLoading = false;
 
@@ -285,7 +285,7 @@ function selectArtist(id) {
 
   sessionId = "echo_" + Date.now();
   hikariTotal = 0;
-  birthDate = null;
+  birthDate = localStorage.getItem("echoBirthDate") || null;
 
   document.getElementById("chatName").textContent = selectedArtist.display_name || '';
   const color = getAvatarColor(selectedArtist.display_name);
@@ -295,7 +295,11 @@ function selectArtist(id) {
 
   document.getElementById("hikariLabel").textContent = "✦ 0 光貨";
   document.getElementById("emotionLabel").textContent = "——";
-  document.getElementById("birthBar").style.display = "block";
+  if (birthDate) {
+    document.getElementById("birthBar").style.display = "none";
+  } else {
+    document.getElementById("birthBar").style.display = "block";
+  }
   document.getElementById("birthInput").value = "";
 
   document.getElementById("messages").innerHTML = "";
@@ -308,6 +312,7 @@ function setBirth() {
   const val = document.getElementById("birthInput").value;
   if (!val) return;
   birthDate = val;
+  localStorage.setItem("echoBirthDate", val);
   document.getElementById("birthBar").style.display = "none";
 }
 
@@ -398,7 +403,7 @@ async function sendMessage() {
         hikariTotal += data.hikari_earned;
         document.getElementById("hikariLabel").textContent = `✦ ${hikariTotal} 光貨`;
       }
-      if (data.biorhythm && birthDate) {
+      if (data.biorhythm) {
         const bio = data.biorhythm;
         const fmt = (v) => v > 0.3 ? `+${(v*100).toFixed(0)}%` : v < -0.3 ? `${(v*100).toFixed(0)}%` : `${(v*100).toFixed(0)}%`;
         const cls = (v) => v > 0.3 ? 'bio-high' : v < -0.3 ? 'bio-low' : '';
