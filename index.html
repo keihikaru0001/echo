@@ -233,7 +233,7 @@ function getAvatarColor(name) {
 
 async function loadArtists() {
   try {
-    const res = await fetch(BASE + "/api/entities/ArtistProfile/filter", {
+    const res = await fetch(BASE + "/functions/getArtists", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: "active" })
@@ -415,7 +415,7 @@ async function showTrail() {
   showView("trail");
 
   try {
-    const res = await fetch(BASE + "/api/entities/FanRequest/filter", {
+    const res = await fetch(BASE + "/functions/getFanTrail", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ session_id: sessionId, artist_id: selectedArtist.id })
