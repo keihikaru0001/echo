@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECHO — アーティスト登録</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #000;
+  color: #fff;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  min-height: 100vh;
+  padding: 32px 16px;
+}
+.container { max-width: 560px; margin: 0 auto; }
+.logo { font-size: 28px; font-weight: 700; letter-spacing: 8px; margin-bottom: 4px; }
+.logo-sub { color: #333; font-size: 11px; letter-spacing: 3px; margin-bottom: 48px; }
+
+.steps { display: flex; gap: 8px; margin-bottom: 40px; }
+.step { flex: 1; height: 3px; background: #111; border-radius: 2px; transition: background 0.3s; }
+.step.active { background: #fff; }
+.step.done { background: #444; }
+
+.step-label { color: #333; font-size: 11px; letter-spacing: 2px; margin-bottom: 24px; }
+.step-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.step-desc { color: #444; font-size: 13px; margin-bottom: 32px; line-height: 1.7; }
+
+.field { margin-bottom: 24px; }
+.field label { display: block; font-size: 12px; color: #555; letter-spacing: 2px; margin-bottom: 8px; }
+.field input, .field textarea, .field select {
+  width: 100%; background: #0d0d0d; border: 1px solid #1a1a1a;
+  color: #fff; padding: 14px 16px; border-radius: 10px;
+  font-size: 15px; font-family: inherit; outline: none;
+  transition: border-color 0.2s;
+}
+.field input:focus, .field textarea:focus, .field select:focus { border-color: #333; }
+.field textarea { resize: vertical; min-height: 100px; line-height: 1.7; }
+.field .hint { color: #333; font-size: 11px; margin-top: 6px; }
+.field select option { background: #0d0d0d; }
+
+.lyric-block {
+  background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 12px;
+  padding: 20px; margin-bottom: 16px;
+}
+.lyric-block-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+}
+.lyric-num { font-size: 12px; color: #333; letter-spacing: 2px; }
+.remove-lyric { background: none; border: none; color: #333; cursor: pointer; font-size: 20px; line-height: 1; }
+.remove-lyric:hover { color: #666; }
+
+.add-lyric-btn {
+  width: 100%; padding: 14px; background: none;
+  border: 1px dashed #1a1a1a; border-radius: 10px;
+  color: #333; font-size: 13px; cursor: pointer; letter-spacing: 2px;
+  transition: border-color 0.2s, color 0.2s;
+}
+.add-lyric-btn:hover { border-color: #333; color: #666; }
+
+.btn-row { display: flex; gap: 12px; margin-top: 40px; }
+.btn-back {
+  flex: 1; padding: 16px; background: none;
+  border: 1px solid #1a1a1a; border-radius: 10px;
+  color: #333; font-size: 14px; cursor: pointer; letter-spacing: 2px;
+}
+.btn-back:hover { border-color: #333; color: #666; }
+.btn-next {
+  flex: 2; padding: 16px; background: #fff;
+  border: none; border-radius: 10px;
+  color: #000; font-size: 14px; font-weight: 700;
+  cursor: pointer; letter-spacing: 2px;
+}
+.btn-next:hover { background: #eee; }
+.btn-next:disabled { background: #1a1a1a; color: #333; cursor: not-allowed; }
+
+#done { display: none; text-align: center; padding: 80px 0; }
+.done-icon { font-size: 48px; margin-bottom: 24px; }
+.done-title { font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+.done-desc { color: #444; font-size: 14px; line-height: 1.8; margin-bottom: 40px; }
+.done-url {
+  background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 10px;
+  padding: 16px; font-size: 13px; color: #888; word-break: break-all;
+  margin-bottom: 12px; cursor: pointer;
+}
+.done-url:hover { border-color: #333; }
+.copy-hint { color: #333; font-size: 11px; }
+
+.loading { display: none; text-align: center; padding: 20px; color: #333; font-size: 13px; }
+.loading.show { display: block; }
+.error-msg { color: #ff4444; font-size: 12px; margin-top: 8px; display: none; }
+.error-msg.show { display: block; }
+</style>
+</head>
+<body>
+<div class="container" id="main">
+  <div class="logo">ECHO</div>
+  <div class="logo-sub">ARTIST ONBOARDING</div>
+
+  <div class="steps">
+    <div class="step active" id="s1"></div>
+    <div class="step" id="s2"></div>
+    <div class="step" id="s3"></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div id="step1">
+    <div class="step-label">STEP 1 / 3</div>
+    <div class="step-title">アーティスト情報</div>
+    <div class="step-desc">ファンに見せる名前と、あなたの世界観を教えてください。</div>
+
+    <div class="field">
+      <label>アーティスト名 *</label>
+      <input type="text" id="name" placeholder="例：山田 花" maxlength="50">
+    </div>
+    <div class="field">
+      <label>キャッチコピー *</label>
+      <input type="text" id="tagline" placeholder="例：夜に溶ける声" maxlength="60">
+    </div>
+    <div class="field">
+      <label>ジャンル</label>
+      <select id="genre">
+        <option value="">選択してください</option>
+        <option value="J-POP">J-POP</option>
+        <option value="フォーク">フォーク</option>
+        <option value="演歌">演歌</option>
+        <option value="ロック">ロック</option>
+        <option value="ジャズ">ジャズ</option>
+        <option value="シンガーソングライター">シンガーソングライター</option>
+        <option value="その他">その他</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>あなたらしい言葉・口癖・よく使うフレーズ</label>
+      <textarea id="phrases" placeholder="例：「ありがとう」より「ありがとな」の方が好き。ライブの後はいつも空を見上げる。"></textarea>
+      <div class="hint">これがAIの言葉のベースになります。自由に書いてください。</div>
+    </div>
+    <div class="field">
+      <label>ファンへのメッセージスタイル</label>
+      <select id="style">
+        <option value="">選択してください</option>
+        <option value="warm">温かく・親しみやすく</option>
+        <option value="poetic">詩的に・文学的に</option>
+        <option value="casual">気さくに・フランクに</option>
+        <option value="cool">クールに・ミステリアスに</option>
+        <option value="energetic">元気よく・前向きに</option>
+      </select>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-next" onclick="toStep2()">次へ →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="step2" style="display:none">
+    <div class="step-label">STEP 2 / 3</div>
+    <div class="step-title">持ち歌を登録</div>
+    <div class="step-desc">歌詞を入れるほど、AIがあなたらしくなります。最低1曲から始められます。</div>
+
+    <div id="lyric-list"></div>
+    <button class="add-lyric-btn" onclick="addLyric()">＋ 曲を追加する</button>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="toStep1()">← 戻る</button>
+      <button class="btn-next" onclick="toStep3()">次へ →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="step3" style="display:none">
+    <div class="step-label">STEP 3 / 3</div>
+    <div class="step-title">確認して登録</div>
+    <div class="step-desc">内容を確認して、ECHOに登録します。登録後すぐにファンとチャットできます。</div>
+
+    <div id="confirm-block" style="background:#0a0a0a;border:1px solid #1a1a1a;border-radius:12px;padding:20px;margin-bottom:24px;"></div>
+
+    <div class="field">
+      <label>連絡先メールアドレス *</label>
+      <input type="email" id="email" placeholder="your@email.com">
+      <div class="hint">登録後の案内に使用します。公開はされません。</div>
+    </div>
+
+    <div class="loading" id="loading">登録中...</div>
+    <div class="error-msg" id="err">登録に失敗しました。もう一度お試しください。</div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="toStep2()">← 戻る</button>
+      <button class="btn-next" id="submit-btn" onclick="submitForm()">ECHOに登録する</button>
+    </div>
+  </div>
+</div>
+
+<!-- 完了画面 -->
+<div class="container" id="done">
+  <div class="done-icon">🌙</div>
+  <div class="done-title">登録完了</div>
+  <div class="done-desc" id="done-desc"></div>
+  <div class="done-url" id="done-url" onclick="copyUrl()"></div>
+  <div class="copy-hint">↑ タップしてURLをコピー</div>
+</div>
+
+<script>
+const BASE = "https://luna-app-9ea2ee19.base44.app";
+let lyricCount = 0;
+
+function updateSteps(current) {
+  for(let i=1;i<=3;i++){
+    const el = document.getElementById('s'+i);
+    if(i < current) el.className='step done';
+    else if(i === current) el.className='step active';
+    else el.className='step';
+  }
+}
+
+function toStep1() {
+  document.getElementById('step1').style.display='';
+  document.getElementById('step2').style.display='none';
+  document.getElementById('step3').style.display='none';
+  updateSteps(1);
+}
+
+function toStep2() {
+  const name = document.getElementById('name').value.trim();
+  const tagline = document.getElementById('tagline').value.trim();
+  if(!name || !tagline) { alert('アーティスト名とキャッチコピーは必須です'); return; }
+  if(lyricCount === 0) addLyric();
+  document.getElementById('step1').style.display='none';
+  document.getElementById('step2').style.display='';
+  document.getElementById('step3').style.display='none';
+  updateSteps(2);
+  window.scrollTo(0,0);
+}
+
+function toStep3() {
+  const titles = document.querySelectorAll('.lyric-title');
+  const hasValid = Array.from(titles).some(t => t.value.trim() !== '');
+  if(!hasValid) { alert('最低1曲の曲名を入力してください'); return; }
+
+  const name = document.getElementById('name').value.trim();
+  const tagline = document.getElementById('tagline').value.trim();
+  const genre = document.getElementById('genre').value;
+  const blocks = document.querySelectorAll('.lyric-block');
+  let songList = '';
+  blocks.forEach(b => {
+    const t = b.querySelector('.lyric-title').value.trim();
+    if(t) songList += `<li style="color:#888;font-size:13px;padding:4px 0">${t}</li>`;
+  });
+
+  document.getElementById('confirm-block').innerHTML = `
+    <div style="margin-bottom:16px">
+      <div style="color:#333;font-size:11px;letter-spacing:2px;margin-bottom:4px">アーティスト名</div>
+      <div style="font-size:18px;font-weight:700">${name}</div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="color:#333;font-size:11px;letter-spacing:2px;margin-bottom:4px">キャッチコピー</div>
+      <div style="color:#888;font-size:14px">${tagline}</div>
+    </div>
+    ${genre ? `<div style="margin-bottom:16px"><div style="color:#333;font-size:11px;letter-spacing:2px;margin-bottom:4px">ジャンル</div><div style="color:#888;font-size:14px">${genre}</div></div>` : ''}
+    <div>
+      <div style="color:#333;font-size:11px;letter-spacing:2px;margin-bottom:8px">登録曲</div>
+      <ul style="list-style:none;padding-left:0">${songList}</ul>
+    </div>
+  `;
+
+  document.getElementById('step1').style.display='none';
+  document.getElementById('step2').style.display='none';
+  document.getElementById('step3').style.display='';
+  updateSteps(3);
+  window.scrollTo(0,0);
+}
+
+function addLyric() {
+  lyricCount++;
+  const id = lyricCount;
+  const div = document.createElement('div');
+  div.className = 'lyric-block';
+  div.id = 'lyric-' + id;
+  div.innerHTML = `
+    <div class="lyric-block-header">
+      <div class="lyric-num">曲 ${id}</div>
+      <button class="remove-lyric" onclick="removeLyric(${id})">×</button>
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>曲名 *</label>
+      <input type="text" class="lyric-title" placeholder="例：夜明けの坂道" maxlength="100">
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>歌詞</label>
+      <textarea class="lyric-body" placeholder="歌詞を貼り付けてください" style="min-height:140px"></textarea>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <label>この曲の雰囲気・テーマ（任意）</label>
+      <input type="text" class="lyric-theme" placeholder="例：別れ、夜、孤独、希望" maxlength="100">
+    </div>
+  `;
+  document.getElementById('lyric-list').appendChild(div);
+}
+
+function removeLyric(id) {
+  const el = document.getElementById('lyric-' + id);
+  if(el) el.remove();
+}
+
+function getLyrics() {
+  const blocks = document.querySelectorAll('.lyric-block');
+  const result = [];
+  blocks.forEach(b => {
+    const title = b.querySelector('.lyric-title').value.trim();
+    const body = b.querySelector('.lyric-body').value.trim();
+    const theme = b.querySelector('.lyric-theme').value.trim();
+    if(title) result.push({ title, body, theme });
+  });
+  return result;
+}
+
+async function submitForm() {
+  const email = document.getElementById('email').value.trim();
+  if(!email) { alert('メールアドレスを入力してください'); return; }
+
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('err').classList.remove('show');
+  document.getElementById('submit-btn').disabled = true;
+
+  try {
+    const name = document.getElementById('name').value.trim();
+    const tagline = document.getElementById('tagline').value.trim();
+    const genre = document.getElementById('genre').value;
+    const phrases = document.getElementById('phrases').value.trim();
+    const style = document.getElementById('style').value;
+
+    const res = await fetch(`${BASE}/functions/echoOnboard`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'register_artist',
+        name, tagline, genre, phrases, style, email,
+        lyrics: getLyrics()
+      })
+    });
+
+    const data = await res.json();
+    if(!data.artist_id) throw new Error('登録失敗');
+    showDone(name, data.artist_id);
+
+  } catch(e) {
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('err').classList.add('show');
+    document.getElementById('submit-btn').disabled = false;
+  }
+}
+
+function showDone(name, id) {
+  document.getElementById('main').style.display = 'none';
+  const done = document.getElementById('done');
+  done.style.display = 'block';
+  const url = `https://keihikaru0001.github.io/echo/?artist=${id}`;
+  document.getElementById('done-desc').innerHTML = `
+    <strong>${name}</strong> さんの登録が完了しました。<br><br>
+    下のURLをファンに共有してください。<br>
+    名刺・フライヤー・SNSに貼るだけで大丈夫です。
+  `;
+  document.getElementById('done-url').textContent = url;
+}
+
+function copyUrl() {
+  const url = document.getElementById('done-url').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    document.querySelector('.copy-hint').textContent = '✓ コピーしました';
+  });
+}
+</script>
+</body>
+</html>
