@@ -182,7 +182,7 @@ body {
     </div>
 
     <div class="loading" id="loading">登録中...</div>
-    <div class="error-msg" id="err">登録に失敗しました。もう一度お試しください。</div>
+    <div class="error-msg" id="err"></div>
 
     <div class="btn-row">
       <button class="btn-back" onclick="toStep2()">← 戻る</button>
@@ -201,7 +201,7 @@ body {
 </div>
 
 <script>
-const BASE = "https://luna-app-9ea2ee19.base44.app";
+const BASE = "https://luna-82cd58fb.base44.app";
 let lyricCount = 0;
 
 function updateSteps(current) {
@@ -320,6 +320,7 @@ async function submitForm() {
 
   document.getElementById('loading').classList.add('show');
   document.getElementById('err').classList.remove('show');
+  document.getElementById('err').textContent = '';
   document.getElementById('submit-btn').disabled = true;
 
   try {
@@ -340,12 +341,14 @@ async function submitForm() {
     });
 
     const data = await res.json();
-    if(!data.artist_id) throw new Error('登録失敗');
+    if(!data.artist_id) throw new Error(data.error || '登録失敗');
     showDone(name, data.artist_id);
 
   } catch(e) {
     document.getElementById('loading').classList.remove('show');
-    document.getElementById('err').classList.add('show');
+    const err = document.getElementById('err');
+    err.textContent = '登録に失敗しました: ' + e.message;
+    err.classList.add('show');
     document.getElementById('submit-btn').disabled = false;
   }
 }
