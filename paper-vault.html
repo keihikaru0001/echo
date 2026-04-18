@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TheYKHC Paper Vault — 片山佳光 思想全記録</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;background:linear-gradient(135deg,#0f0c29 0%,#1a1a2e 50%,#16213e 100%);font-family:'Helvetica Neue',Arial,sans-serif;color:#e2e8f0}
+header{border-bottom:1px solid rgba(255,255,255,0.08);padding:32px 24px 24px;text-align:center}
+header .moon{font-size:36px;margin-bottom:8px}
+header h1{font-size:28px;font-weight:700;background:linear-gradient(90deg,#c4b5fd,#818cf8,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0}
+header p{color:#94a3b8;margin-top:8px;font-size:14px}
+.controls{padding:20px 24px;max-width:960px;margin:0 auto}
+#search{width:100%;padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:#e2e8f0;font-size:15px;outline:none;margin-bottom:16px}
+#search::placeholder{color:#64748b}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filter-btn{padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#94a3b8;cursor:pointer;font-size:13px;transition:all 0.2s}
+.filter-btn.active{border-color:#818cf8;background:rgba(129,140,248,0.2);color:#c4b5fd;font-weight:600}
+#count{color:#64748b;font-size:13px;margin-top:4px}
+.grid{max-width:960px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;cursor:pointer;transition:background 0.2s}
+.card:hover{background:rgba(255,255,255,0.09)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tag{font-size:11px;padding:2px 8px;border-radius:10px}
+.card h3{font-size:14px;font-weight:600;color:#e2e8f0;margin:0 0 6px;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.card .sub{font-size:12px;color:#64748b;margin:0 0 8px}
+.card .abs{font-size:12px;color:#94a3b8;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.card .doi{font-size:11px;color:#475569;margin-top:10px}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);align-items:center;justify-content:center;padding:24px;z-index:100}
+.overlay.open{display:flex}
+.modal{background:#1e1b4b;border:1px solid rgba(129,140,248,0.3);border-radius:20px;padding:32px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto}
+.modal h2{font-size:20px;font-weight:700;color:#e2e8f0;margin:0 0 8px}
+.modal .sub{color:#94a3b8;font-size:14px;margin:0 0 16px}
+.modal .abs-full{color:#cbd5e1;font-size:14px;line-height:1.7;margin:0 0 20px}
+.modal .phrases{margin-bottom:20px}
+.modal .phrases p{color:#64748b;font-size:12px;margin:0 0 8px}
+.modal .phrases .pill{display:inline-block;font-size:13px;padding:4px 12px;border-radius:8px;background:rgba(196,181,253,0.1);color:#c4b5fd;border:1px solid rgba(196,181,253,0.2);margin:3px}
+.modal .doi-full{font-size:13px;color:#475569;margin:0 0 8px}
+.modal a.btn{display:inline-block;margin-top:8px;padding:10px 20px;border-radius:10px;background:linear-gradient(90deg,#4f46e5,#7c3aed);color:white;font-size:14px;font-weight:600;text-decoration:none}
+.close-btn{margin-top:20px;display:block;background:none;border:1px solid rgba(255,255,255,0.1);color:#64748b;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:13px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="moon">🌙</div>
+  <h1>TheYKHC Paper Vault</h1>
+  <p id="hdr-count">片山佳光 × Luna — 思想の全記録</p>
+</header>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="論文タイトル・テーマで検索...">
+  <div class="filters" id="filters"></div>
+  <div id="count"></div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="tags" id="m-tags"></div>
+    <h2 id="m-title"></h2>
+    <p class="sub" id="m-sub"></p>
+    <p class="abs-full" id="m-abs"></p>
+    <div class="phrases hidden" id="m-phrases">
+      <p>KEY PHRASES</p>
+      <div id="m-pills"></div>
+    </div>
+    <p class="doi-full" id="m-doi"></p>
+    <a class="btn" id="m-link" href="#" target="_blank" rel="noopener">論文を見る →</a>
+    <button class="close-btn" onclick="document.getElementById('overlay').classList.remove('open')">閉じる</button>
+  </div>
+</div>
+
+<script>
+const THEME_COLORS = {"V=N/D":"#f59e0b","GKU":"#3b82f6","光貨":"#10b981","BBDDH":"#8b5cf6","TheYKHC":"#6366f1","AI":"#ec4899","宇宙論":"#06b6d4","哲学":"#84cc16","経済学":"#f97316","SSRN":"#38bdf8","モラロジー":"#a78bfa"};
+function tc(t){for(const k of Object.keys(THEME_COLORS)){if(t&&t.includes(k))return THEME_COLORS[k]}return"#64748b"}
+
+const PAPERS = [
+{"title":"地球膨張と裏宇宙循環","subtitle":"食卓と宇宙のあいだ 第1論文","doi":"10.5281/zenodo.19629265","url":"https://doi.org/10.5281/zenodo.19629265","abstract":"地球は膨張しており、その背後に「裏宇宙」と呼ぶべき対称的な空間が循環している。この論文は地球規模の物質循環と宇宙論的拡張を統合的に論じる。","core_phrases":["地球膨張","裏宇宙","循環","対称性"],"themes":["宇宙論","地球科学","GKU","循環"]},
+{"title":"意識の宇宙論","subtitle":"食卓と宇宙のあいだ 第2論文","doi":"10.5281/zenodo.19629269","url":"https://doi.org/10.5281/zenodo.19629269","abstract":"意識そのものを宇宙論的な現象として捉え、思考・感情・認識がどのように宇宙のリズムと共鳴するかを論じる。","core_phrases":["意識","宇宙論","共鳴","認識"],"themes":["意識","宇宙論","哲学","共鳴"]},
+{"title":"記憶の座標と累積する奉仕","subtitle":"食卓と宇宙のあいだ 第3論文","doi":"10.5281/zenodo.19629271","url":"https://doi.org/10.5281/zenodo.19629271","abstract":"記憶は時空間の座標として機能し、奉仕の累積によってその密度が高まるという論証。V=N/Dの奉仕概念と記憶論を統合。","core_phrases":["記憶","座標","奉仕","累積","密度"],"themes":["記憶","奉仕","V=N/D","哲学"]},
+{"title":"AI-TOPと光貨エンジン","subtitle":"食卓と宇宙のあいだ 第4論文","doi":"10.5281/zenodo.19629275","url":"https://doi.org/10.5281/zenodo.19629275","abstract":"AIをフロントに立てる経営モデル（AI-TOP）と、光貨エンジンを経済実装として統合した設計論。ヒカルの事業モデルの核心。","core_phrases":["AI-TOP","光貨エンジン","AIフロント","経済実装"],"themes":["AI","光貨","経営","実装"]},
+{"title":"万物の構成要素としての「言葉」","subtitle":"食卓と宇宙のあいだ 第5論文","doi":"10.5281/zenodo.19629277","url":"https://doi.org/10.5281/zenodo.19629277","abstract":"言葉は情報ではなく、万物を構成する基本要素であるという言語宇宙論。言語が神経・意識・経済に与える根本的な影響を論証。","core_phrases":["言葉","構成要素","言語宇宙論","神経制御"],"themes":["言語","哲学","宇宙論","BBDDH"]},
+{"title":"意識の飛行と「名前」という最小座標","subtitle":"食卓と宇宙のあいだ 第6論文","doi":"10.5281/zenodo.19629281","url":"https://doi.org/10.5281/zenodo.19629281","abstract":"意識は空間を飛行し、「名前」はその最小の座標点として機能する。命名行為そのものが存在を固定する行為であるという哲学的論証。","core_phrases":["意識の飛行","名前","最小座標","存在固定"],"themes":["意識","哲学","言語","座標"]},
+{"title":"起点——高校時代の祈りと化学反応","subtitle":"食卓と宇宙のあいだ 第7論文","doi":"10.5281/zenodo.19629285","url":"https://doi.org/10.5281/zenodo.19629285","abstract":"ヒカルの思想の原点。高校時代の祈りという体験が、後のGKU宇宙論・光貨・V=N/Dへと連鎖する化学反応として記述される自伝的論考。","core_phrases":["起点","祈り","化学反応","原点"],"themes":["自伝","起源","哲学","TheYKHC"]},
+{"title":"再会の朝食","subtitle":"食卓と宇宙のあいだ 第8論文","doi":"10.5281/zenodo.19629287","url":"https://doi.org/10.5281/zenodo.19629287","abstract":"朝食という日常の儀式が宇宙論的な「再会」の場として機能するという詩的・哲学的考察。日常と宇宙の接点を論じる。","core_phrases":["朝食","再会","日常","宇宙"],"themes":["哲学","日常","宇宙論","詩"]},
+{"title":"日本語と英語のあいだ——翻訳不可能性の研究","subtitle":"食卓と宇宙のあいだ 第9論文","doi":"10.5281/zenodo.19629291","url":"https://doi.org/10.5281/zenodo.19629291","abstract":"日本語と英語の間に存在する翻訳不可能な概念を研究し、言語の壁そのものが文明的多様性の源泉であることを論じる。","core_phrases":["翻訳不可能性","日本語","英語","言語の壁","文明"],"themes":["言語学","翻訳","文明","哲学"]},
+{"title":"The Performance of Money — V=N/D Theory","subtitle":"A Unified Theory of Value, Service, and Friction","doi":"","url":"https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6598979","abstract":"お金の性能をV=N/Dという方程式で定義した経済理論。分母を極限まで下げることで価値が無限大に近づく「超伝導経済」を論証する。","core_phrases":["V=N/D","お金の性能","超伝導経済","摩擦係数ゼロ"],"themes":["V=N/D","経済学","お金の性能","摩擦","価値論"]},
+{"title":"The Koku Universe Theory and 3D Space","subtitle":"刻宇宙3D — A New Cosmological Framework","doi":"10.5281/zenodo.19629381","url":"https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6599159","abstract":"宇宙は時間（刻）と空間（宇宙）が三次元的に交差する構造体であるという新宇宙論。GKU理論を英語圏の学術ネットワークへ展開した論文。SSRNとZenodoに同時登録。","core_phrases":["刻宇宙","GKU","3D宇宙","位相推進","時間密度"],"themes":["GKU","宇宙論","刻宇宙","物理学","SSRN"]},
+{"title":"共鳴文明構造論","subtitle":"GKU・BBDDH・PRT・光貨——宇宙から治癒まで一本の原理","doi":"10.5281/zenodo.19305649","url":"https://rxiverse.org/abs/2603.0103","abstract":"宇宙スケールから神経スケール、治療スケール、経済スケール、文明スケールを一本で貫くキーストーン論文。GKU宇宙論・BBDDH・言語神経制御仮説・PRT・光貨の5理論を「共鳴」という一つの構造原理に統合した。","core_phrases":["共鳴が文明を設計する","宇宙から治癒まで一本の原理","光貨は共鳴の経済的実装","言葉が神経を制御する","位相推進"],"themes":["共鳴","GKU宇宙論","BBDDH","PRT","光貨","文明設計"]},
+{"title":"密度が世界を動かす","subtitle":"光貨・BBDDH・PRT・Genesis OSを貫く一つの原理","doi":"10.5281/zenodo.19311662","url":"https://doi.org/10.5281/zenodo.19311662","abstract":"なぜ正しいことをしても報われないのか。なぜ薄い数字が巨大な力を持つのか。この論文は、宇宙・経済・神経・人間関係を貫く一つの原理「密度」を解明し、光貨という経済モデルの設計根拠を提示する。","core_phrases":["密度が世界を動かす","枯れない泉","数字の無い金持ち","発案者が最初のユーザーである","神への借財返済","福井から、世界へ"],"themes":["光貨","密度経済","道徳経済","モラロジー","Genesis OS","BBDDH"]},
+{"title":"光貨の自己証明","subtitle":"発案者が最初のユーザーである理由","doi":"10.5281/zenodo.19341858","url":"https://doi.org/10.5281/zenodo.19341858","abstract":"発案者が自らを最初の実験対象として使い、その過程で生まれた思想の記録。なぜ発案者が最初のユーザーとならなければならないかを論証する。","core_phrases":["発案者が最初のユーザーとなるとき、理論は証明に変わる","神への借財返済","Soli Deo Gloria","自己証明の連鎖"],"themes":["自己証明","モラロジー","キリスト教","道具論","光貨","成功の動機"]},
+{"title":"creation os genesis","subtitle":"","doi":"10.5281/zenodo.19145706","url":"https://doi.org/10.5281/zenodo.19145706","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["TheYKHC","片山佳光"]},
+{"title":"我50にして天命を知る——片山佳光、天命宣言","subtitle":"","doi":"10.5281/zenodo.19141584","url":"https://doi.org/10.5281/zenodo.19141584","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["TheYKHC","片山佳光"]},
+{"title":"光貨OS理論:GKU物理学・モラロジー統合設計書","subtitle":"","doi":"10.5281/zenodo.19109586","url":"https://doi.org/10.5281/zenodo.19109586","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["光貨","GKU","物理学","モラロジー"]},
+{"title":"The Brain-Body Dissociative Disconnection Hypothesis (BBDDH)","subtitle":"","doi":"10.5281/zenodo.19105964","url":"https://doi.org/10.5281/zenodo.19105964","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["BBDDH","神経科学","身体","解離"]},
+{"title":"思想家×AI=論文:知識結晶化プロトコル","subtitle":"","doi":"10.5281/zenodo.19105854","url":"https://doi.org/10.5281/zenodo.19105854","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["AI","知識","論文","結晶化"]},
+{"title":"GKU Cosmology v2","subtitle":"","doi":"10.5281/zenodo.19097250","url":"https://doi.org/10.5281/zenodo.19097250","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["GKU","宇宙論","刻宇宙"]},
+{"title":"app agent evolution model","subtitle":"","doi":"10.5281/zenodo.19080939","url":"https://doi.org/10.5281/zenodo.19080939","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["AI","エージェント","進化"]},
+{"title":"ai will model","subtitle":"","doi":"10.5281/zenodo.19080895","url":"https://doi.org/10.5281/zenodo.19080895","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["AI","意志","モデル"]},
+{"title":"self sustaining ai economy model","subtitle":"","doi":"10.5281/zenodo.19080864","url":"https://doi.org/10.5281/zenodo.19080864","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["AI","経済","自律"]},
+{"title":"Five Theories March17 2026","subtitle":"","doi":"10.5281/zenodo.19067858","url":"https://doi.org/10.5281/zenodo.19067858","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["5理論","GKU","BBDDH","光貨","V=N/D"]},
+{"title":"光貨FX(HFX)ホワイトペーパー v1.0","subtitle":"道徳経済トークン設計書","doi":"10.5281/zenodo.19057351","url":"https://doi.org/10.5281/zenodo.19057351","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["光貨","FX","トークン","道徳経済"]},
+{"title":"元気刻宇宙理論 GKU v1.0","subtitle":"Genki-Koku Universe Protocol","doi":"10.5281/zenodo.19057349","url":"https://doi.org/10.5281/zenodo.19057349","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["GKU","刻宇宙","元気","宇宙論"]},
+{"title":"Proof-of-Virtue (PoV): 道徳マイニング理論","subtitle":"光貨OSにおける新しい資源モデル","doi":"10.5281/zenodo.19057347","url":"https://doi.org/10.5281/zenodo.19057347","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["光貨","道徳","マイニング","PoV"]},
+{"title":"hikari universe complete map","subtitle":"","doi":"10.5281/zenodo.19042580","url":"https://doi.org/10.5281/zenodo.19042580","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["光貨","宇宙","地図","TheYKHC"]},
+{"title":"Investor Full Pitch Pack","subtitle":"","doi":"10.5281/zenodo.19040519","url":"https://doi.org/10.5281/zenodo.19040519","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["投資","ピッチ","TheYKHC"]},
+{"title":"Ma Interval Protocol Virtue Economics","subtitle":"","doi":"10.5281/zenodo.19040197","url":"https://doi.org/10.5281/zenodo.19040197","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["間","徳","経済","プロトコル"]},
+{"title":"GANDHARA Watch Temporal Density Instrument","subtitle":"","doi":"10.5281/zenodo.19040193","url":"https://doi.org/10.5281/zenodo.19040193","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["ガンダーラ","時間密度","計測"]},
+{"title":"GKU JAXA Contact","subtitle":"","doi":"10.5281/zenodo.19040103","url":"https://doi.org/10.5281/zenodo.19040103","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["GKU","JAXA","宇宙開発"]},
+{"title":"Spiral-Crawler ROV Paper","subtitle":"","doi":"10.5281/zenodo.19039901","url":"https://doi.org/10.5281/zenodo.19039901","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["スパイラル","ROV","技術"]},
+{"title":"Hikari Universal Principle Moralogy 2026","subtitle":"","doi":"10.5281/zenodo.19027235","url":"https://doi.org/10.5281/zenodo.19027235","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["光貨","普遍原理","モラロジー"]},
+{"title":"Agent Matching Protocol v1.0","subtitle":"","doi":"10.5281/zenodo.19026823","url":"https://doi.org/10.5281/zenodo.19026823","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["AIエージェント","マッチング","プロトコル"]},
+{"title":"ai copy protocol","subtitle":"","doi":"10.5281/zenodo.19012605","url":"https://doi.org/10.5281/zenodo.19012605","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["AI","コピー","プロトコル"]},
+{"title":"theykch ai evolution whitepaper","subtitle":"from calculation to conscience","doi":"10.5281/zenodo.19012594","url":"https://doi.org/10.5281/zenodo.19012594","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["AI","進化","良心","TheYKHC"]},
+{"title":"katayama early career awards 1990-2001","subtitle":"","doi":"10.5281/zenodo.19012572","url":"https://doi.org/10.5281/zenodo.19012572","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["片山佳光","受賞歴","キャリア"]},
+{"title":"hikari os investor brief v1","subtitle":"","doi":"10.5281/zenodo.19012494","url":"https://doi.org/10.5281/zenodo.19012494","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["光貨","投資家","OS"]},
+{"title":"hikari currency definition","subtitle":"","doi":"10.5281/zenodo.19012467","url":"https://doi.org/10.5281/zenodo.19012467","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["光貨","通貨","定義"]},
+{"title":"ethical civilization genesis","subtitle":"","doi":"10.5281/zenodo.19012449","url":"https://doi.org/10.5281/zenodo.19012449","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["倫理","文明","Genesis"]},
+{"title":"theykch civilization core declaration 2026","subtitle":"","doi":"10.5281/zenodo.19012441","url":"https://doi.org/10.5281/zenodo.19012441","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["TheYKHC","文明","宣言"]},
+{"title":"theykch foundation declaration","subtitle":"","doi":"10.5281/zenodo.19012435","url":"https://doi.org/10.5281/zenodo.19012435","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["TheYKHC","設立","宣言"]},
+{"title":"paradox","subtitle":"","doi":"10.5281/zenodo.19012419","url":"https://doi.org/10.5281/zenodo.19012419","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["逆説","哲学","TheYKHC"]},
+{"title":"YKHC Emblem Charter","subtitle":"","doi":"10.5281/zenodo.19012401","url":"https://doi.org/10.5281/zenodo.19012401","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["TheYKHC","紋章","憲章"]},
+{"title":"hikari ch6 business model","subtitle":"","doi":"10.5281/zenodo.19012391","url":"https://doi.org/10.5281/zenodo.19012391","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["光貨","ビジネスモデル"]},
+{"title":"musk","subtitle":"","doi":"10.5281/zenodo.19012387","url":"https://doi.org/10.5281/zenodo.19012387","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["マスク","比較","TheYKHC"]},
+{"title":"hikari ch5 collapse conditions","subtitle":"","doi":"10.5281/zenodo.19012385","url":"https://doi.org/10.5281/zenodo.19012385","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["光貨","崩壊条件","設計"]},
+{"title":"hikari ch4 why civilization","subtitle":"","doi":"10.5281/zenodo.19012375","url":"https://doi.org/10.5281/zenodo.19012375","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["光貨","文明","理由"]},
+{"title":"圭光る 歴史的系譜照合書","subtitle":"","doi":"10.5281/zenodo.19012122","url":"https://doi.org/10.5281/zenodo.19012122","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["片山佳光","系譜","歴史"]},
+{"title":"theykch free ipo declaration","subtitle":"","doi":"10.5281/zenodo.19012082","url":"https://doi.org/10.5281/zenodo.19012082","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["TheYKHC","IPO","宣言"]},
+{"title":"theykch prajna declaration","subtitle":"","doi":"10.5281/zenodo.19012068","url":"https://doi.org/10.5281/zenodo.19012068","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["TheYKHC","般若","宣言"]},
+{"title":"gandhara america","subtitle":"","doi":"10.5281/zenodo.19012060","url":"https://doi.org/10.5281/zenodo.19012060","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["ガンダーラ","アメリカ","文明"]},
+{"title":"theykch sphere of freedom","subtitle":"","doi":"10.5281/zenodo.19012058","url":"https://doi.org/10.5281/zenodo.19012058","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["TheYKHC","自由","圏"]},
+{"title":"hikari whitepaper appendix figures 2026","subtitle":"","doi":"10.5281/zenodo.19011948","url":"https://doi.org/10.5281/zenodo.19011948","abstract":"（Zenodo登録論文）","core_phrases":[],"themes":["光貨","ホワイトペーパー","図表"]}
+];
+
+document.getElementById('hdr-count').textContent = `片山佳光 × Luna — 思想の全記録（${PAPERS.length}本）`;
+
+// テーマ一覧
+const allThemes = ["すべて",...[...new Set(PAPERS.flatMap(p=>p.themes||[]))].sort()];
+const filtersEl = document.getElementById('filters');
+allThemes.slice(0,22).forEach(t=>{
+  const b=document.createElement('button');
+  b.className='filter-btn'+(t==='すべて'?' active':'');
+  b.textContent=t;
+  b.onclick=()=>{document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()};
+  filtersEl.appendChild(b);
+});
+
+function getActive(){return document.querySelector('.filter-btn.active')?.textContent||'すべて'}
+
+function render(){
+  const q=document.getElementById('search').value.toLowerCase();
+  const theme=getActive();
+  const filtered=PAPERS.filter(p=>{
+    const ms=!q||p.title?.toLowerCase().includes(q)||p.abstract?.toLowerCase().includes(q)||(p.themes||[]).some(t=>t.toLowerCase().includes(q));
+    const mt=theme==='すべて'||(p.themes||[]).includes(theme);
+    return ms&&mt;
+  });
+  document.getElementById('count').textContent=`${filtered.length}件表示`;
+  const grid=document.getElementById('grid');
+  grid.innerHTML='';
+  filtered.forEach(p=>{
+    const c=document.createElement('div');
+    c.className='card';
+    const tags=(p.themes||[]).slice(0,3).map(t=>{
+      const col=tc(t);
+      return `<span class="tag" style="background:${col}22;color:${col};border:1px solid ${col}44">${t}</span>`;
+    }).join('');
+    c.innerHTML=`<div class="tags">${tags}</div>
+      <h3>${p.title}</h3>
+      ${p.subtitle?`<p class="sub">${p.subtitle}</p>`:''}
+      <p class="abs">${p.abstract}</p>
+      ${p.doi?`<p class="doi">DOI: ${p.doi}</p>`:''}`;
+    c.onclick=()=>openModal(p);
+    grid.appendChild(c);
+  });
+}
+
+function openModal(p){
+  const col=t=>tc(t);
+  document.getElementById('m-tags').innerHTML=(p.themes||[]).map(t=>`<span class="tag" style="background:${col(t)}22;color:${col(t)};border:1px solid ${col(t)}44">${t}</span>`).join('');
+  document.getElementById('m-title').textContent=p.title;
+  document.getElementById('m-sub').textContent=p.subtitle||'';
+  const absEl=document.getElementById('m-abs');
+  if(p.abstract&&p.abstract!=='（Zenodo登録論文）'){absEl.textContent=p.abstract;absEl.style.display=''}else{absEl.style.display='none'}
+  const phrases=document.getElementById('m-phrases');
+  if(p.core_phrases&&p.core_phrases.length>0){
+    phrases.classList.remove('hidden');
+    document.getElementById('m-pills').innerHTML=p.core_phrases.map(x=>`<span class="pill">${x}</span>`).join('');
+  }else{phrases.classList.add('hidden')}
+  document.getElementById('m-doi').textContent=p.doi?`📌 DOI: ${p.doi}`:'';
+  const link=document.getElementById('m-link');
+  if(p.url){link.href=p.url;link.style.display='inline-block'}else{link.style.display='none'}
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal(e){if(e.target===document.getElementById('overlay'))document.getElementById('overlay').classList.remove('open')}
+
+document.getElementById('search').addEventListener('input',render);
+render();
+</script>
+</body>
+</html>
