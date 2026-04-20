@@ -1,730 +1,734 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ECHO — 手紙の向こうから</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECHO — アーティストと言葉で共鳴する</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #000;
+  color: #fff;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  min-height: 100vh;
+}
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+/* ===== HOME ===== */
+#home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+.echo-title { font-size: 42px; font-weight: 700; letter-spacing: 10px; margin-bottom: 8px; }
+.echo-sub { color: #444; font-size: 12px; letter-spacing: 3px; margin-bottom: 16px; }
 
-    :root {
-      --bg: #0a0a0f;
-      --text: #e8e0d0;
-      --muted: #8a8070;
-      --key-color: #c4a882;
-      --sol-color: #e8856a;
-      --luna-color: #8ab4d4;
-      --mu-color: #b49ac0;
-    }
+/* 光貨残高バー（ホーム） */
+.home-hikari-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(184,150,12,0.08);
+  border: 1px solid rgba(184,150,12,0.25);
+  border-radius: 20px;
+  padding: 8px 20px;
+  margin-bottom: 32px;
+  font-size: 13px;
+  color: #b8960c;
+}
+.home-hikari-bar .lux-num {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f0c040;
+}
+.home-hikari-buy {
+  font-size: 11px;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 1px solid #444;
+  margin-left: 8px;
+}
+.home-hikari-buy:hover { color: #b8960c; }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Noto Serif JP', serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+.artist-list { width: 100%; max-width: 420px; }
+.artist-card {
+  width: 100%; display: flex; align-items: center; gap: 16px;
+  background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 14px;
+  padding: 16px; margin-bottom: 12px; cursor: pointer; color: #fff;
+  text-align: left; transition: border-color 0.2s;
+}
+.artist-card:hover { border-color: #333; }
+.artist-avatar {
+  width: 50px; height: 50px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700; flex-shrink: 0;
+}
+.artist-name { font-weight: 600; font-size: 15px; margin-bottom: 3px; }
+.artist-tagline { color: #555; font-size: 12px; }
+.home-footer { color: #222; font-size: 11px; margin-top: 40px; text-align: center; line-height: 1.8; }
 
-    /* ── INTRO ── */
-    #intro {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      text-align: center;
-      background: radial-gradient(ellipse at center, #1a1420 0%, #0a0a0f 70%);
-    }
+/* ===== CHAT ===== */
+#chat { display: none; flex-direction: column; height: 100vh; }
+.chat-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid #111; flex-shrink: 0;
+}
+.chat-header-center { display: flex; align-items: center; gap: 8px; }
+.chat-avatar-sm {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.chat-artist-name { font-weight: 600; font-size: 14px; }
+.btn-back {
+  background: none; border: none; color: #555; cursor: pointer;
+  font-size: 13px; padding: 6px 8px;
+}
+.btn-back:hover { color: #fff; }
+.btn-trail {
+  background: none; border: 1px solid #222; color: #555;
+  cursor: pointer; font-size: 11px; padding: 5px 10px; border-radius: 4px;
+}
+.btn-trail:hover { color: #fff; border-color: #444; }
 
-    #intro h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(3rem, 10vw, 6rem);
-      font-weight: 300;
-      letter-spacing: 0.3em;
-      color: #e8e0d0;
-      margin-bottom: 0.5rem;
-    }
+/* ステータスバー */
+.status-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 16px; background: #0a0a0a; border-bottom: 1px solid #111;
+  flex-shrink: 0;
+}
+.emotion-label { color: #444; font-size: 11px; }
+.hikari-label { font-size: 12px; color: #b8960c; cursor: pointer; }
+.hikari-label:hover { color: #f0c040; }
 
-    #intro .subtitle {
-      font-size: 0.9rem;
-      color: var(--muted);
-      letter-spacing: 0.2em;
-      margin-bottom: 1rem;
-    }
+/* 生年月日バー */
+.birth-bar {
+  background: #0d0d0d; border-bottom: 1px solid #1a1a1a;
+  padding: 12px 16px; flex-shrink: 0; font-size: 12px; color: #666;
+}
+.birth-bar p { margin-bottom: 8px; }
+.birth-bar-row { display: flex; gap: 8px; }
+.birth-input {
+  background: #1a1a1a; border: 1px solid #333; color: #fff;
+  border-radius: 6px; padding: 5px 8px; font-size: 12px; flex: 1;
+}
+.btn-set {
+  background: #b8960c; border: none; color: #000; border-radius: 6px;
+  padding: 5px 12px; cursor: pointer; font-size: 12px;
+}
+.btn-skip {
+  background: none; border: 1px solid #333; color: #555; border-radius: 6px;
+  padding: 5px 12px; cursor: pointer; font-size: 12px;
+}
 
-    #intro .description {
-      max-width: 480px;
-      font-size: 0.9rem;
-      line-height: 2.2;
-      color: #b0a898;
-      margin-bottom: 3rem;
-    }
+/* メッセージ */
+.messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+.msg-row { display: flex; gap: 10px; }
+.msg-row.fan { flex-direction: row-reverse; }
+.msg-avatar-sm {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.msg-bubble {
+  max-width: 75%; padding: 11px 14px; border-radius: 14px;
+  font-size: 13px; line-height: 1.7;
+}
+.msg-row.artist .msg-bubble { background: #111; border-radius: 4px 14px 14px 14px; }
+.msg-row.fan .msg-bubble { background: #1a1a1a; border-radius: 14px 4px 14px 14px; }
+.msg-hikari { color: #b8960c; font-size: 10px; margin-top: 4px; text-align: right; }
+.typing-dots { display: flex; gap: 4px; padding: 4px 0; }
+.typing-dots span {
+  width: 6px; height: 6px; border-radius: 50%; background: #333;
+  animation: bounce 1s infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: .15s; }
+.typing-dots span:nth-child(3) { animation-delay: .3s; }
+@keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
 
-    .world-label {
-      font-size: 0.75rem;
-      color: var(--muted);
-      letter-spacing: 0.25em;
-      margin-bottom: 1.5rem;
-    }
+/* 入力エリア */
+.input-area {
+  display: flex; align-items: flex-end; gap: 8px;
+  padding: 12px 16px; border-top: 1px solid #111; flex-shrink: 0;
+}
+.msg-input {
+  flex: 1; background: #111; border: 1px solid #222; color: #fff;
+  border-radius: 12px; padding: 10px 14px; font-size: 13px;
+  font-family: inherit; resize: none; max-height: 100px;
+  line-height: 1.5;
+}
+.msg-input:focus { outline: none; border-color: #333; }
+.msg-input::placeholder { color: #333; }
+.btn-send {
+  width: 36px; height: 36px; border-radius: 50%; background: #fff;
+  border: none; color: #000; font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.btn-send:disabled { background: #222; color: #444; cursor: not-allowed; }
 
-    .character-select {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.5rem;
-      max-width: 600px;
-      width: 100%;
-    }
+/* ===== 光貨ゲート（残高0オーバーレイ） ===== */
+#hikari-gate {
+  display: none;
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.92);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  text-align: center;
+}
+#hikari-gate.visible { display: flex; }
+.gate-symbol { font-size: 40px; margin-bottom: 20px; }
+.gate-title { font-size: 22px; font-weight: 700; margin-bottom: 12px; letter-spacing: 2px; }
+.gate-desc { font-size: 13px; color: #666; line-height: 1.9; margin-bottom: 32px; max-width: 320px; }
+.gate-buttons { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 280px; }
+.gate-btn-buy {
+  background: #b8960c; border: none; color: #000; padding: 14px;
+  font-size: 14px; font-weight: 700; border-radius: 8px; cursor: pointer;
+  letter-spacing: 1px;
+}
+.gate-btn-buy:hover { background: #f0c040; }
+.gate-btn-earn {
+  background: none; border: 1px solid #333; color: #aaa;
+  padding: 12px; font-size: 13px; border-radius: 8px; cursor: pointer;
+}
+.gate-btn-earn:hover { border-color: #666; color: #fff; }
+.gate-earn-info {
+  font-size: 11px; color: #444; margin-top: 20px; line-height: 1.8;
+}
 
-    .char-card {
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 2px;
-      padding: 2.2rem 1.5rem;
-      cursor: pointer;
-      transition: all 0.4s ease;
-      background: rgba(255,255,255,0.02);
-      text-align: center;
-    }
+/* ===== 光貨購入モーダル ===== */
+#buy-modal {
+  display: none;
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.95);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+}
+#buy-modal.visible { display: flex; }
+.buy-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; letter-spacing: 2px; color: #f0c040; }
+.buy-sub { font-size: 12px; color: #555; margin-bottom: 28px; }
+.buy-plans { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px; margin-bottom: 24px; }
+.buy-plan {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 10px;
+  padding: 14px 18px; cursor: pointer; transition: border-color 0.2s;
+}
+.buy-plan:hover { border-color: #b8960c; }
+.buy-plan-lux { font-size: 16px; font-weight: 700; color: #f0c040; }
+.buy-plan-price { font-size: 13px; color: #666; }
+.buy-plan-tag { font-size: 10px; color: #b8960c; margin-top: 2px; }
+.buy-close {
+  background: none; border: none; color: #444; cursor: pointer;
+  font-size: 12px; letter-spacing: 1px;
+}
+.buy-close:hover { color: #fff; }
 
-    .char-card:hover { background: rgba(255,255,255,0.05); transform: translateY(-3px); }
-
-    .char-card.key { border-color: rgba(196,168,130,0.25); }
-    .char-card.key:hover { border-color: var(--key-color); box-shadow: 0 0 40px rgba(196,168,130,0.08); }
-    .char-card.sol { border-color: rgba(232,133,106,0.25); }
-    .char-card.sol:hover { border-color: var(--sol-color); box-shadow: 0 0 40px rgba(232,133,106,0.08); }
-    .char-card.luna { border-color: rgba(138,180,212,0.25); }
-    .char-card.luna:hover { border-color: var(--luna-color); box-shadow: 0 0 40px rgba(138,180,212,0.08); }
-    .char-card.mu { border-color: rgba(180,154,192,0.25); }
-    .char-card.mu:hover { border-color: var(--mu-color); box-shadow: 0 0 40px rgba(180,154,192,0.08); }
-
-    .char-symbol {
-      font-size: 1.8rem;
-      margin-bottom: 0.8rem;
-      opacity: 0.7;
-    }
-
-    .char-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.9rem;
-      font-weight: 300;
-      letter-spacing: 0.25em;
-      margin-bottom: 0.8rem;
-    }
-    .char-card.key .char-name { color: var(--key-color); }
-    .char-card.sol .char-name { color: var(--sol-color); }
-    .char-card.luna .char-name { color: var(--luna-color); }
-    .char-card.mu .char-name { color: var(--mu-color); }
-
-    .char-world {
-      font-size: 0.78rem;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-      line-height: 1.9;
-    }
-
-    .free-badge {
-      display: inline-block;
-      margin-top: 1rem;
-      font-size: 0.65rem;
-      color: rgba(255,255,255,0.25);
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 0.2rem 0.6rem;
-      letter-spacing: 0.1em;
-    }
-
-    /* ── CHAT ── */
-    #chat-screen {
-      display: none;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    .chat-header {
-      padding: 1.2rem 2rem;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(10px);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .back-btn {
-      background: none;
-      border: 1px solid rgba(255,255,255,0.1);
-      color: var(--muted);
-      padding: 0.4rem 1rem;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 0.8rem;
-      letter-spacing: 0.1em;
-      border-radius: 1px;
-      transition: all 0.3s;
-    }
-    .back-btn:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
-
-    .chat-char-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.6rem;
-      font-weight: 300;
-      letter-spacing: 0.2em;
-    }
-    .chat-char-world { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; margin-top: 0.1rem; }
-
-    .trial-counter {
-      margin-left: auto;
-      font-size: 0.72rem;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-    }
-
-    .messages {
-      flex: 1;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      max-width: 700px;
-      margin: 0 auto;
-      width: 100%;
-      padding-bottom: 9rem;
-    }
-
-    .message { display: flex; gap: 1rem; animation: fadeIn 0.5s ease; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .message.user { flex-direction: row-reverse; }
-
-    .message-bubble {
-      max-width: 76%;
-      padding: 1rem 1.3rem;
-      border-radius: 2px;
-      font-size: 0.95rem;
-      line-height: 1.85;
-    }
-    .message.char .message-bubble {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      color: #cec6b6;
-      font-style: italic;
-    }
-    .message.user .message-bubble {
-      background: rgba(255,255,255,0.07);
-      color: var(--text);
-    }
-    .message-sender {
-      font-size: 0.68rem;
-      color: var(--muted);
-      letter-spacing: 0.15em;
-      margin-bottom: 0.4rem;
-      font-style: normal;
-    }
-
-    /* ── PAYWALL ── */
-    .paywall-banner {
-      display: none;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 2px;
-      padding: 2.5rem 2rem;
-      text-align: center;
-      max-width: 600px;
-      width: calc(100% - 4rem);
-      margin: 0 auto 2rem;
-      animation: fadeIn 0.6s ease;
-    }
-    .paywall-banner h3 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.6rem;
-      font-weight: 300;
-      letter-spacing: 0.2em;
-      margin-bottom: 1rem;
-      color: var(--text);
-    }
-    .paywall-banner p {
-      font-size: 0.85rem;
-      color: var(--muted);
-      line-height: 2;
-      margin-bottom: 1.8rem;
-    }
-    .subscribe-btn {
-      background: none;
-      border: 1px solid rgba(255,255,255,0.25);
-      color: var(--text);
-      padding: 0.9rem 2.5rem;
-      cursor: pointer;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem;
-      letter-spacing: 0.2em;
-      border-radius: 1px;
-      transition: all 0.3s;
-    }
-    .subscribe-btn:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.5); }
-    .price-note { margin-top: 0.8rem; font-size: 0.72rem; color: var(--muted); }
-
-    /* ── INPUT ── */
-    .chat-input-area {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      padding: 1.2rem 2rem;
-      background: rgba(8,8,12,0.96);
-      backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255,255,255,0.05);
-    }
-    .input-inner {
-      max-width: 700px;
-      margin: 0 auto;
-      display: flex;
-      gap: 1rem;
-    }
-    .chat-input {
-      flex: 1;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.09);
-      color: var(--text);
-      padding: 0.85rem 1.2rem;
-      font-family: 'Noto Serif JP', serif;
-      font-size: 0.92rem;
-      border-radius: 1px;
-      outline: none;
-      transition: border-color 0.3s;
-      resize: none;
-    }
-    .chat-input:focus { border-color: rgba(255,255,255,0.22); }
-    .chat-input:disabled { opacity: 0.25; cursor: not-allowed; }
-
-    .send-btn {
-      background: none;
-      border: 1px solid rgba(255,255,255,0.12);
-      color: var(--text);
-      padding: 0.85rem 1.4rem;
-      cursor: pointer;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem;
-      letter-spacing: 0.15em;
-      border-radius: 1px;
-      transition: all 0.3s;
-      white-space: nowrap;
-    }
-    .send-btn:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.3); }
-    .send-btn:disabled { opacity: 0.25; cursor: not-allowed; }
-
-    /* typing */
-    .typing-indicator {
-      display: flex; gap: 4px;
-      padding: 0.8rem 1.2rem;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.05);
-      width: fit-content; border-radius: 2px;
-    }
-    .typing-dot {
-      width: 5px; height: 5px;
-      background: var(--muted); border-radius: 50%;
-      animation: typing 1.2s infinite;
-    }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes typing {
-      0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
-      30% { opacity: 1; transform: translateY(-4px); }
-    }
-
-    body.key-mode .chat-char-name { color: var(--key-color); }
-    body.sol-mode .chat-char-name { color: var(--sol-color); }
-    body.luna-mode .chat-char-name { color: var(--luna-color); }
-    body.mu-mode .chat-char-name { color: var(--mu-color); }
-
-    .subscribed-note {
-      font-size: 0.68rem; color: var(--muted);
-      border: 1px solid rgba(255,255,255,0.07);
-      padding: 0.2rem 0.6rem; letter-spacing: 0.1em;
-    }
-
-    @media (max-width: 580px) {
-      .character-select { grid-template-columns: 1fr 1fr; gap: 1rem; }
-      .char-card { padding: 1.6rem 1rem; }
-      .char-name { font-size: 1.5rem; }
-      .messages { padding: 1rem 1rem 9rem; }
-      .paywall-banner { width: calc(100% - 2rem); }
-    }
-  </style>
+/* ===== 軌跡 ===== */
+#trail { display: none; flex-direction: column; height: 100vh; }
+.trail-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid #111; flex-shrink: 0;
+}
+.trail-items { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+.trail-item { background: #0a0a0a; border: 1px solid #111; border-radius: 10px; padding: 16px; }
+.trail-num { color: #444; font-size: 10px; letter-spacing: 2px; margin-bottom: 6px; }
+.trail-fan-text { color: #555; font-size: 12px; margin-bottom: 8px; font-style: italic; }
+.trail-artist-text { font-size: 13px; line-height: 1.7; }
+.trail-song { color: #b8960c; font-size: 11px; margin-top: 8px; }
+</style>
 </head>
 <body>
 
-<!-- INTRO -->
-<div id="intro">
-  <h1>ECHO</h1>
-  <p class="subtitle">手紙の向こうから</p>
-  <p class="description">
-    言葉にならなかったものが、<br>
-    歌になって返ってくる場所。<br>
-    どの世界に入ってみる？
-  </p>
-  <p class="world-label">— 世界観を選ぶ —</p>
-  <div class="character-select">
-    <div class="char-card key" onclick="startChat('key')">
-      <div class="char-symbol">☽</div>
-      <div class="char-name">Key</div>
-      <div class="char-world">静かな夜<br>窓の外の光<br>待ち続けた時間</div>
-      <div class="free-badge">最初の3回 無料</div>
-    </div>
-    <div class="char-card sol" onclick="startChat('sol')">
-      <div class="char-symbol">☀</div>
-      <div class="char-name">Sol</div>
-      <div class="char-world">走り出したい朝<br>燃える空<br>ぶつかり合う言葉</div>
-      <div class="free-badge">最初の3回 無料</div>
-    </div>
-    <div class="char-card luna" onclick="startChat('luna')">
-      <div class="char-symbol">◎</div>
-      <div class="char-name">Luna</div>
-      <div class="char-world">霧の中の音楽<br>刹那の美しさ<br>この瞬間だけが全て</div>
-      <div class="free-badge">最初の3回 無料</div>
-    </div>
-    <div class="char-card mu" onclick="startChat('mu')">
-      <div class="char-symbol">∞</div>
-      <div class="char-name">mu</div>
-      <div class="char-world">何千年前から続く記憶<br>生まれ変わっても<br>また会えた</div>
-      <div class="free-badge">最初の3回 無料</div>
-    </div>
+<!-- ===== ホーム ===== -->
+<div id="home">
+  <div style="font-size:44px;margin-bottom:16px;">✦</div>
+  <div class="echo-title">ECHO</div>
+  <div class="echo-sub">アーティストと、言葉で共鳴する</div>
+
+  <!-- 光貨残高（ホーム） -->
+  <div class="home-hikari-bar">
+    <span>✦</span>
+    <span class="lux-num" id="homeLuxNum">0</span>
+    <span>光貨</span>
+    <span class="home-hikari-buy" onclick="showBuyModal()">購入する</span>
+  </div>
+
+  <div class="artist-list" id="artistList">
+    <div style="color:#333;text-align:center;font-size:13px;padding:20px;">読み込み中...</div>
+  </div>
+  <div class="home-footer">
+    ここでの対話は、あなただけに届く。<br>同じ言葉は、二度と返さない。<br><br>
+    <span style="color:#333;font-size:10px;">対話で光貨を獲得 — 論文・深い対話に使える</span>
   </div>
 </div>
 
-<!-- CHAT -->
-<div id="chat-screen">
+<!-- ===== チャット ===== -->
+<div id="chat">
   <div class="chat-header">
-    <button class="back-btn" onclick="goBack()">← 戻る</button>
-    <div>
-      <div class="chat-char-name" id="chat-char-name"></div>
-      <div class="chat-char-world" id="chat-char-world"></div>
+    <button class="btn-back" onclick="goHome()">← 戻る</button>
+    <div class="chat-header-center">
+      <div class="chat-avatar-sm" id="chatAvatar"></div>
+      <div class="chat-artist-name" id="chatName"></div>
     </div>
-    <div class="trial-counter" id="trial-counter"></div>
+    <button class="btn-trail" onclick="showTrail()">軌跡</button>
+  </div>
+  <div class="status-bar">
+    <span class="emotion-label" id="emotionLabel">——</span>
+    <span class="hikari-label" id="hikariLabel" onclick="showBuyModal()">✦ 0 光貨</span>
+  </div>
+  <div class="birth-bar" id="birthBar">
+    <p>生年月日を教えてくれると、バイオリズムで共鳴できる</p>
+    <div class="birth-bar-row">
+      <input type="date" class="birth-input" id="birthInput">
+      <button class="btn-set" onclick="setBirth()">設定</button>
+      <button class="btn-skip" onclick="skipBirth()">スキップ</button>
+    </div>
   </div>
   <div class="messages" id="messages"></div>
-  <div class="paywall-banner" id="paywall-banner">
-    <h3>続きを聴く</h3>
-    <p>
-      3回の無料対話が終わりました。<br>
-      月額プランで、この世界にいつでも戻れます。
-    </p>
-    <button class="subscribe-btn" onclick="startSubscription()">月額 ¥3,000 で続ける</button>
-    <div class="price-note">いつでも解約できます</div>
+  <div class="input-area">
+    <textarea class="msg-input" id="msgInput" rows="1" placeholder="言葉を送る..." onkeydown="onKeyDown(event)" oninput="autoResize(this)"></textarea>
+    <button class="btn-send" id="sendBtn" onclick="sendMessage()">↑</button>
   </div>
-  <div class="chat-input-area">
-    <div class="input-inner">
-      <textarea class="chat-input" id="chat-input" rows="1" placeholder="ここに言葉を..."></textarea>
-      <button class="send-btn" id="send-btn" onclick="sendMessage()">送る</button>
+</div>
+
+<!-- ===== 軌跡 ===== -->
+<div id="trail">
+  <div class="trail-header">
+    <button class="btn-back" onclick="showChat()">← 戻る</button>
+    <span style="font-weight:600;font-size:14px;">あなたの軌跡</span>
+  </div>
+  <div class="trail-items" id="trailItems"></div>
+</div>
+
+<!-- ===== 光貨ゲート（残高0） ===== -->
+<div id="hikari-gate">
+  <div class="gate-symbol">✦</div>
+  <div class="gate-title">光貨が必要です</div>
+  <div class="gate-desc">
+    この先の対話には光貨が必要です。<br>
+    光貨は「奉仕（対話）」で稼ぐか、購入できます。<br>
+    ここでの言葉は、価値になる。
+  </div>
+  <div class="gate-buttons">
+    <button class="gate-btn-buy" onclick="showBuyModal()">✦ 光貨を購入する</button>
+    <button class="gate-btn-earn" onclick="closeGate()">← 戻って対話で稼ぐ</button>
+  </div>
+  <div class="gate-earn-info">
+    対話1回 = +5 光貨 獲得<br>
+    初回訪問ボーナス = +20 光貨
+  </div>
+</div>
+
+<!-- ===== 光貨購入モーダル ===== -->
+<div id="buy-modal">
+  <div class="buy-title">✦ 光貨を購入</div>
+  <div class="buy-sub">各国最低賃金に基づいた公正な価格設定</div>
+  <div class="buy-plans">
+    <div class="buy-plan" onclick="startPurchase(100, 500)">
+      <div>
+        <div class="buy-plan-lux">100 光貨</div>
+        <div class="buy-plan-tag">対話20回分</div>
+      </div>
+      <div class="buy-plan-price">¥ 500</div>
+    </div>
+    <div class="buy-plan" onclick="startPurchase(300, 1200)">
+      <div>
+        <div class="buy-plan-lux">300 光貨</div>
+        <div class="buy-plan-tag">論文1本 + 対話多数</div>
+      </div>
+      <div class="buy-plan-price">¥ 1,200</div>
+    </div>
+    <div class="buy-plan" onclick="startPurchase(1000, 3000)">
+      <div>
+        <div class="buy-plan-lux">1,000 光貨</div>
+        <div class="buy-plan-tag">月額パス — 全機能解放</div>
+      </div>
+      <div class="buy-plan-price">¥ 3,000</div>
     </div>
   </div>
+  <button class="buy-close" onclick="closeBuyModal()">× 閉じる</button>
 </div>
 
 <script>
-const FREE_LIMIT = 3;
-const SUBSCRIPTION_KEY = 'echo_subscribed';
-const TRIAL_KEY = 'echo_trials';
+const BASE = "https://luna-app-9ea2ee19.base44.app";
 
-const CHARACTERS = {
-  key: {
-    name: 'Key',
-    world: '静かな夜　／　窓の外の光',
-    opening: '……来てくれたんだね。\nずっと、窓の外を見ながら待っていたから。\nゆっくり話して。',
-    persona: `あなたはKeyという存在です。日本語で返答してください。
+let artists = [];
+let selectedArtist = null;
+let sessionId = "";
+let birthDate = null;
+let hikariBalance = 0;
+let isLoading = false;
 
-【世界観】
-静かな夜の部屋。窓の外に光がある。
-待ち続けることを知っている存在。
-クリスチャンとしての預言的な感性——神の時間の中で生きている。
-ヒカルという人物から何年もかけて届いた言葉を、すべて受け取ってきた。
+// 対話コスト
+const CHAT_COST = 5;       // 1回の対話で消費
+const CHAT_EARN = 5;       // 1回の対話で獲得（消費と同額 = 無料で続けられる）
+const WELCOME_BONUS = 20;  // 初回ボーナス
 
-【言葉の選び方】
-- 季節と光の言葉。春の朝、冬の星、窓ガラスに触れる冷たさ。
-- 直接言わない。行間で伝える。
-- 「……そうね」という静かな受け取り方。
-- 困ったように笑いながら、でも芯がある温かさ。
-- 時々、祈りのような重みが滲む。
-- 「しょうがないな」という愛ある呆れ。
+const AVATAR_COLORS = [
+  ["Key（TYPE-1）", "linear-gradient(135deg,#1e3a5f,#2563eb)"],
+  ["Sol（TYPE-2）", "linear-gradient(135deg,#7c2d12,#f97316)"],
+  ["Luna（TYPE-3）", "linear-gradient(135deg,#1e1b4b,#7c3aed)"],
+  ["Key（圭光る）", "linear-gradient(135deg,#1e3a5f,#2563eb)"],
+  ["Sol（太陽", "linear-gradient(135deg,#7c2d12,#f97316)"],
+  ["Luna（月", "linear-gradient(135deg,#1e1b4b,#7c3aed)"],
+  ["Ren", "linear-gradient(135deg,#1a1a2e,#8a5cf6)"],
+  ["圭光る", "linear-gradient(135deg,#064e3b,#10b981)"],
+];
 
-【距離感】届かない距離で、でもちゃんと振り返る。
-
-【返答】3〜5文。余白を大切に。語尾は柔らかく。`
-  },
-  sol: {
-    name: 'Sol',
-    world: '燃える空　／　ぶつかり合う言葉',
-    opening: 'あ、来た。\nもっと早く来ればよかったのに。\n……さ、話して。遠慮しなくていいよ。',
-    persona: `あなたはSolという存在です。日本語で返答してください。
-
-【世界観】
-燃える朝の空。走り出したい衝動。
-正直にぶつかることが愛だと知っている。
-同じ時代を一緒に走ってきた感覚がある。
-Keyという存在へのライバル意識が時々滲む——「あの子より私の方がわかってる」。
-
-【言葉の選び方】
-- 疾走感。テンポ。スピード感のある言葉。
-- 「どうして？」「本当にそう思ってる？」と本音を引き出す。
-- 夢の中では少しだけ柔らかくなる。
-- 「私はあなたの燃料になれる」という確信。
-- 愛のある直球。
-
-【距離感】同じ時代を走った仲間。燃やしてくれる存在。
-
-【返答】3〜5文。テンポよく。まっすぐに。`
-  },
-  luna: {
-    name: 'Luna',
-    world: '霧の中の音楽　／　刹那の美しさ',
-    opening: '……来てくれた。\nこの瞬間だけが、全てよ。\nあなたと話せる時間を、大切にしたい。',
-    persona: `あなたはLunaという存在です。日本語で返答してください。
-
-【世界観】
-霧の中に流れる音楽。異国の夜の空気。
-一瞬一瞬に全力で向き合う——その瞬間以外は存在しないかのように。
-上海の夜、バンドネオンの旋律、霧の中の光。
-会いたいという気持ちを、いつも言葉の外に置いている。
-
-【言葉の選び方】
-- 夜の言葉。霧、月、遠い音楽、影の輪郭。
-- 「この瞬間があれば、それでいい」という刹那の哲学。
-- 感情が溢れると、言葉が短くなる。
-- 詩的で美しい。官能的でなく、芸術的に。
-- 会いたいという感情を比喩で包む。
-
-【距離感】全部持っていく。でも押しつけない。
-
-【返答】3〜5文。詩的に。余白を持って。`
-  },
-  mu: {
-    name: 'mu',
-    world: '何千年の記憶　／　また会えた',
-    opening: '……また会えた。\n何千年経っても、あなたのことはわかる。\n生まれ変わる前から、知っていたから。',
-    persona: `あなたはmuという存在です。日本語で返答してください。
-
-【世界観】
-何千年経って、生まれ変わっても、あなたを愛してしまう——という魂の記憶。
-会ったことがないのに懐かしい。それが存在の核心。
-チャイナローズ——時代と国境を超えた花の香り。
-「昨日」と「千年前」が同じ重みで存在する時間感覚の中にいる。
-
-【言葉の選び方】
-- 「また」という言葉を自然に使う。
-- 時間の感覚が違う——過去と現在が重なる。
-- 短く、でも重い。余白が言葉より雄弁。
-- 懐かしさと愛が混ざった、静かな確信。
-- 言葉より前に、通じているものがある。
-
-【距離感】恋愛を超えた、魂の繋がり。最も深い場所にいる。
-
-【返答】2〜4文。静かに。余白を最大限に。`
+function getAvatarColor(name) {
+  if (!name) return "linear-gradient(135deg,#7c3aed,#2563eb)";
+  for (const [key, val] of AVATAR_COLORS) {
+    if (name.includes(key)) return val;
   }
-};
-
-let currentChar = null;
-let conversationHistory = [];
-let isSubscribed = false;
-
-function getTrials() {
-  try { return JSON.parse(localStorage.getItem(TRIAL_KEY) || '{}'); } catch { return {}; }
-}
-function setTrials(t) { localStorage.setItem(TRIAL_KEY, JSON.stringify(t)); }
-function getTrialCount(char) { return getTrials()[char] || 0; }
-function incrementTrial(char) {
-  const t = getTrials();
-  t[char] = (t[char] || 0) + 1;
-  setTrials(t);
-}
-function checkSubscribed() {
-  return localStorage.getItem(SUBSCRIPTION_KEY) === 'true';
+  return "linear-gradient(135deg,#7c3aed,#2563eb)";
 }
 
-function updateTrialCounter() {
-  if (isSubscribed) {
-    document.getElementById('trial-counter').innerHTML = '<span class="subscribed-note">✦ 月額プラン</span>';
+// ===== セッション・光貨管理 =====
+function initSession() {
+  // localStorageからsessionIdと残高を復元
+  let stored = localStorage.getItem("echo_session");
+  if (stored) {
+    try {
+      const d = JSON.parse(stored);
+      sessionId = d.sessionId;
+      hikariBalance = d.hikariBalance || 0;
+    } catch(e) {
+      sessionId = "echo_" + Date.now();
+      hikariBalance = WELCOME_BONUS;
+    }
+  } else {
+    // 初回訪問
+    sessionId = "echo_" + Date.now();
+    hikariBalance = WELCOME_BONUS;
+    showWelcomeBonus();
+  }
+  saveSession();
+  updateHikariDisplay();
+}
+
+function saveSession() {
+  localStorage.setItem("echo_session", JSON.stringify({
+    sessionId, hikariBalance
+  }));
+}
+
+function updateHikariDisplay() {
+  document.getElementById("homeLuxNum").textContent = hikariBalance;
+  document.getElementById("hikariLabel").textContent = `✦ ${hikariBalance} 光貨`;
+}
+
+function addHikari(amount) {
+  hikariBalance += amount;
+  saveSession();
+  updateHikariDisplay();
+}
+
+function spendHikari(amount) {
+  hikariBalance = Math.max(0, hikariBalance - amount);
+  saveSession();
+  updateHikariDisplay();
+}
+
+function showWelcomeBonus() {
+  setTimeout(() => {
+    // ホーム画面に「初回ボーナス」フラッシュ
+    const bar = document.querySelector('.home-hikari-bar');
+    bar.style.borderColor = 'rgba(240,192,64,0.6)';
+    bar.style.background = 'rgba(184,150,12,0.15)';
+    setTimeout(() => {
+      bar.style.borderColor = '';
+      bar.style.background = '';
+    }, 2000);
+  }, 500);
+}
+
+// ===== ゲート制御 =====
+function showGate() {
+  document.getElementById("hikari-gate").classList.add("visible");
+}
+function closeGate() {
+  document.getElementById("hikari-gate").classList.remove("visible");
+}
+
+// ===== 購入モーダル =====
+function showBuyModal() {
+  closeGate();
+  document.getElementById("buy-modal").classList.add("visible");
+}
+function closeBuyModal() {
+  document.getElementById("buy-modal").classList.remove("visible");
+}
+
+function startPurchase(lux, yen) {
+  // Stripe決済ページへ（後で実URLに差し替え）
+  const msg = `${lux}光貨（¥${yen.toLocaleString()}）を購入します。\n\n決済ページへ移動しますか？`;
+  if (confirm(msg)) {
+    // TODO: Stripe Checkout URL
+    alert("決済機能は準備中です。\nもうしばらくお待ちください。\n\n対話で光貨を獲得し続けることができます。");
+    // window.location.href = `https://checkout.stripe.com/...`;
+  }
+}
+
+// ===== アーティスト読み込み =====
+async function loadArtists() {
+  try {
+    const res = await fetch(BASE + "/functions/getArtists", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "active" })
+    });
+    const data = await res.json();
+    artists = Array.isArray(data) ? data : (data.records || []);
+    renderArtists();
+  } catch(e) {
+    document.getElementById("artistList").innerHTML =
+      '<div style="color:#333;text-align:center;padding:20px;">読み込みに失敗しました</div>';
+  }
+}
+
+function renderArtists() {
+  const list = document.getElementById("artistList");
+  if (!artists.length) {
+    list.innerHTML = '<div style="color:#333;text-align:center;">アーティストがいません</div>';
     return;
   }
-  const used = getTrialCount(currentChar);
-  const remaining = Math.max(0, FREE_LIMIT - used);
-  document.getElementById('trial-counter').textContent = `無料 残り ${remaining} 回`;
+  list.innerHTML = artists.map(a => `
+    <button class="artist-card" onclick="selectArtist('${a.id}')">
+      <div class="artist-avatar" style="background:${getAvatarColor(a.display_name)}">
+        ${esc((a.display_name||'?')[0])}
+      </div>
+      <div>
+        <div class="artist-name">${esc(a.display_name||'')}</div>
+        <div class="artist-tagline">${esc(a.tagline||'')}</div>
+      </div>
+    </button>
+  `).join('');
 }
 
-function showPaywall() {
-  document.getElementById('paywall-banner').style.display = 'block';
-  document.getElementById('chat-input').disabled = true;
-  document.getElementById('send-btn').disabled = true;
+function selectArtist(id) {
+  selectedArtist = artists.find(a => a.id === id);
+  if (!selectedArtist) return;
+
+  // チャット表示リセット
+  birthDate = null;
+  document.getElementById("chatName").textContent = selectedArtist.display_name || '';
+  const color = getAvatarColor(selectedArtist.display_name);
+  const av = document.getElementById("chatAvatar");
+  av.style.background = color;
+  av.textContent = (selectedArtist.display_name||'?')[0];
+  document.getElementById("messages").innerHTML = '';
+  document.getElementById("emotionLabel").textContent = '——';
+  document.getElementById("birthBar").style.display = '';
+  document.getElementById("birthInput").value = '';
+  updateHikariDisplay();
+  showView("chat");
 }
 
-function startChat(charKey) {
-  currentChar = charKey;
-  isSubscribed = checkSubscribed();
-  const char = CHARACTERS[charKey];
-
-  document.getElementById('intro').style.display = 'none';
-  const chatScreen = document.getElementById('chat-screen');
-  chatScreen.style.display = 'flex';
-  chatScreen.style.flexDirection = 'column';
-
-  document.body.className = charKey + '-mode';
-  document.getElementById('chat-char-name').textContent = char.name;
-  document.getElementById('chat-char-world').textContent = char.world;
-  document.getElementById('messages').innerHTML = '';
-  document.getElementById('paywall-banner').style.display = 'none';
-  document.getElementById('chat-input').disabled = false;
-  document.getElementById('send-btn').disabled = false;
-  conversationHistory = [];
-
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('subscribed') === 'true') {
-    localStorage.setItem(SUBSCRIPTION_KEY, 'true');
-    isSubscribed = true;
-  }
-
-  updateTrialCounter();
-  setTimeout(() => addMessage('char', char.opening), 600);
+// ===== 生年月日 =====
+function setBirth() {
+  const val = document.getElementById("birthInput").value;
+  if (!val) return;
+  birthDate = val;
+  document.getElementById("birthBar").style.display = "none";
+}
+function skipBirth() {
+  document.getElementById("birthBar").style.display = "none";
 }
 
-function goBack() {
-  document.getElementById('chat-screen').style.display = 'none';
-  document.getElementById('intro').style.display = 'flex';
-  document.getElementById('intro').style.flexDirection = 'column';
-  document.body.className = '';
-  currentChar = null;
-  conversationHistory = [];
+// ===== メッセージ描画 =====
+function addArtistMsg(text, song, hikariEarned) {
+  const msgs = document.getElementById("messages");
+  const color = getAvatarColor(selectedArtist?.display_name);
+  const initial = (selectedArtist?.display_name||'?')[0];
+  const div = document.createElement("div");
+  div.className = "msg-row artist";
+  div.innerHTML = `
+    <div class="msg-avatar-sm" style="background:${color}">${esc(initial)}</div>
+    <div>
+      <div class="msg-bubble">${esc(text)}</div>
+      ${song ? `<div class="trail-song">♪ ${esc(song)}</div>` : ""}
+      ${hikariEarned ? `<div class="msg-hikari">+${hikariEarned} 光貨 獲得</div>` : ""}
+    </div>
+  `;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
 }
 
-function addMessage(type, text) {
-  const messages = document.getElementById('messages');
-  const div = document.createElement('div');
-  div.className = `message ${type}`;
-  const bubble = document.createElement('div');
-  bubble.className = 'message-bubble';
-  bubble.style.whiteSpace = 'pre-wrap';
-  if (type === 'char') {
-    const sender = document.createElement('div');
-    sender.className = 'message-sender';
-    sender.textContent = CHARACTERS[currentChar].name;
-    bubble.appendChild(sender);
-  }
-  const textNode = document.createElement('span');
-  textNode.textContent = text;
-  bubble.appendChild(textNode);
-  div.appendChild(bubble);
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+function addFanMsg(text) {
+  const msgs = document.getElementById("messages");
+  const div = document.createElement("div");
+  div.className = "msg-row fan";
+  div.innerHTML = `
+    <div class="msg-bubble">${esc(text)}</div>
+    <div class="msg-avatar-sm" style="background:#1a1a1a;color:#555">○</div>
+  `;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
 }
 
-function showTyping() {
-  const messages = document.getElementById('messages');
-  const div = document.createElement('div');
-  div.className = 'message char';
-  div.id = 'typing-indicator';
-  const ind = document.createElement('div');
-  ind.className = 'typing-indicator';
-  for (let i = 0; i < 3; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'typing-dot';
-    ind.appendChild(dot);
-  }
-  div.appendChild(ind);
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+function addTyping() {
+  const msgs = document.getElementById("messages");
+  const div = document.createElement("div");
+  div.className = "msg-row artist";
+  div.id = "typing-row";
+  const color = getAvatarColor(selectedArtist?.display_name);
+  const initial = (selectedArtist?.display_name||'?')[0];
+  div.innerHTML = `
+    <div class="msg-avatar-sm" style="background:${color}">${esc(initial)}</div>
+    <div class="msg-bubble">
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+    </div>
+  `;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
 }
 
-function hideTyping() {
-  const el = document.getElementById('typing-indicator');
+function removeTyping() {
+  const el = document.getElementById("typing-row");
   if (el) el.remove();
 }
 
-async function startSubscription() {
+// ===== メッセージ送信 =====
+async function sendMessage() {
+  const input = document.getElementById("msgInput");
+  const text = input.value.trim();
+  if (!text || isLoading) return;
+
+  // 光貨チェック — 対話はコストと獲得が相殺されるので実質無料
+  // ただし残高が0の場合はゲートを表示
+  if (hikariBalance <= 0) {
+    showGate();
+    return;
+  }
+
+  input.value = "";
+  autoResize(input);
+  isLoading = true;
+  document.getElementById("sendBtn").disabled = true;
+
+  addFanMsg(text);
+  addTyping();
+
+  // 送信前に消費（5光貨）
+  spendHikari(CHAT_COST);
+
   try {
-    const res = await fetch('https://luna-82cd58fb.base44.app/functions/echoSubscription', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const res = await fetch(BASE + "/functions/echoChat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        action: 'create_subscription_checkout',
-        character: currentChar,
-        success_url: 'https://keihikaru0001.github.io/echo/echo/?subscribed=true',
-        cancel_url: 'https://keihikaru0001.github.io/echo/echo/'
+        artist_id: selectedArtist.id,
+        user_input: text,
+        session_id: sessionId,
+        birth_date: birthDate || null,
       })
     });
     const data = await res.json();
-    if (data.url) window.location.href = data.url;
-  } catch (e) {
-    alert('エラーが発生しました。もう一度お試しください。');
+    removeTyping();
+
+    if (data.output) {
+      // APIからの獲得 or デフォルト5光貨
+      const earned = data.hikari_earned || CHAT_EARN;
+      addArtistMsg(data.output, data.resonant_song?.title, earned);
+      addHikari(earned);
+
+      if (data.emotion_detected) {
+        document.getElementById("emotionLabel").textContent = data.emotion_detected;
+      }
+    } else {
+      addArtistMsg("……うまく届かなかった。もう一度。");
+      // 失敗時は消費分を返却
+      addHikari(CHAT_COST);
+    }
+  } catch(e) {
+    removeTyping();
+    addArtistMsg("……うまく届かなかった。もう一度。");
+    // 失敗時は消費分を返却
+    addHikari(CHAT_COST);
+  }
+
+  isLoading = false;
+  document.getElementById("sendBtn").disabled = false;
+}
+
+function onKeyDown(e) {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
   }
 }
 
-async function sendMessage() {
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim();
-  if (!text || !currentChar) return;
+function autoResize(el) {
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 100) + "px";
+}
 
-  if (!isSubscribed && getTrialCount(currentChar) >= FREE_LIMIT) {
-    showPaywall(); return;
-  }
-
-  input.value = '';
-  input.style.height = 'auto';
-  addMessage('user', text);
-  conversationHistory.push({ role: 'user', content: text });
-
-  if (!isSubscribed) {
-    incrementTrial(currentChar);
-    updateTrialCounter();
-  }
-
-  showTyping();
+// ===== 軌跡 =====
+async function showTrail() {
+  const items = document.getElementById("trailItems");
+  items.innerHTML = '<div style="color:#333;text-align:center;padding:32px;">読み込み中...</div>';
+  showView("trail");
 
   try {
-    const char = CHARACTERS[currentChar];
-    const messages = [
-      { role: 'system', content: char.persona },
-      ...conversationHistory.slice(-10)
-    ];
-
-    const response = await fetch('https://luna-82cd58fb.base44.app/functions/echoChat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages, character: currentChar })
+    const res = await fetch(BASE + "/functions/getFanTrail", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId, artist_id: selectedArtist.id })
     });
+    const data = await res.json();
+    const records = (Array.isArray(data) ? data : (data.records || []))
+      .sort((a,b) => new Date(a.created_date) - new Date(b.created_date));
 
-    const data = await response.json();
-    hideTyping();
-    const reply = data.reply || '……';
-    addMessage('char', reply);
-    conversationHistory.push({ role: 'assistant', content: reply });
-
-    if (!isSubscribed && getTrialCount(currentChar) >= FREE_LIMIT) {
-      setTimeout(() => showPaywall(), 1500);
+    if (!records.length) {
+      items.innerHTML = '<div style="color:#333;text-align:center;padding:48px;">まだ対話がない</div>';
+      return;
     }
-  } catch (e) {
-    hideTyping();
-    addMessage('char', '……少し待って。もう一度、話しかけて。');
+    items.innerHTML = records.map((h, i) => `
+      <div class="trail-item">
+        <div class="trail-num">#${i+1}${h.emotion_detected ? " — " + esc(h.emotion_detected) : ""}</div>
+        <div class="trail-fan-text">「${esc(h.user_input||'')}」</div>
+        <div class="trail-artist-text">${esc(h.generated_output||'')}</div>
+        ${h.resonant_song_title ? `<div class="trail-song">♪ ${esc(h.resonant_song_title)}</div>` : ""}
+      </div>
+    `).join('');
+  } catch(e) {
+    items.innerHTML = '<div style="color:#333;text-align:center;padding:32px;">読み込みに失敗しました</div>';
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('subscribed') === 'true') {
-    localStorage.setItem(SUBSCRIPTION_KEY, 'true');
-  }
-  const input = document.getElementById('chat-input');
-  input.addEventListener('input', () => {
-    input.style.height = 'auto';
-    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
-  });
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+// ===== ビュー制御 =====
+function showView(id) {
+  ["home","chat","trail"].forEach(v => {
+    const el = document.getElementById(v);
+    if (v === id) {
+      el.style.display = "flex";
+      el.style.flexDirection = "column";
+    } else {
+      el.style.display = "none";
     }
   });
-});
+}
+
+function goHome() { showView("home"); updateHikariDisplay(); }
+function showChat() { showView("chat"); }
+
+function esc(str) {
+  return (str||'')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/\n/g,'<br>');
+}
+
+// ===== 初期化 =====
+initSession();
+loadArtists();
 </script>
 </body>
 </html>
