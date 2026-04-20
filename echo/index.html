@@ -464,13 +464,24 @@ function closeBuyModal() {
   document.getElementById("buy-modal").classList.remove("visible");
 }
 
+const STRIPE_URLS = {
+  100: "https://buy.stripe.com/4gMdRagio9FT2iigzE6kg0a",
+  300: "https://buy.stripe.com/dRm5kE8PW4lzaOOabg6kg0b",
+  1000: "https://buy.stripe.com/00wfZifek3hv4qq6Z46kg0c"
+};
+
+const STRIPE_URLS = {
+  100:  "https://buy.stripe.com/4gMdRagio9FT2iigzE6kg0a",
+  300:  "https://buy.stripe.com/dRm5kE8PW4lzaOOabg6kg0b",
+  1000: "https://buy.stripe.com/00wfZifek3hv4qq6Z46kg0c"
+};
+
 function startPurchase(lux, yen) {
-  // Stripe決済ページへ（後で実URLに差し替え）
-  const msg = `${lux}光貨（¥${yen.toLocaleString()}）を購入します。\n\n決済ページへ移動しますか？`;
-  if (confirm(msg)) {
-    // TODO: Stripe Checkout URL
-    alert("決済機能は準備中です。\nもうしばらくお待ちください。\n\n対話で光貨を獲得し続けることができます。");
-    // window.location.href = `https://checkout.stripe.com/...`;
+  const url = STRIPE_URLS[lux];
+  if (url) {
+    // 購入後に光貨を付与するため、lux数をlocalStorageに予約
+    localStorage.setItem("echo_pending_lux", lux);
+    window.location.href = url;
   }
 }
 
@@ -726,8 +737,36 @@ function esc(str) {
     .replace(/\n/g,'<br>');
 }
 
+// ===== 決済完了後の光貨付与 =====
+function checkPurchaseReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const lux = parseInt(params.get("lux") || "0");
+  const pending = parseInt(localStorage.getItem("echo_pending_lux") || "0");
+
+  if (lux > 0 && pending === lux) {
+    localStorage.removeItem("echo_pending_lux");
+    addHikari(lux);
+    // 購入完了メッセージ
+    setTimeout(() => {
+      const bar = document.querySelector('.home-hikari-bar');
+      if (bar) {
+        bar.style.borderColor = 'rgba(240,192,64,0.8)';
+        bar.style.background = 'rgba(184,150,12,0.2)';
+        const notice = document.createElement('div');
+        notice.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#b8960c;color:#000;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;z-index:500;';
+        notice.textContent = `✦ ${lux} 光貨 が付与されました`;
+        document.body.appendChild(notice);
+        setTimeout(() => { notice.remove(); bar.style.borderColor=''; bar.style.background=''; }, 3000);
+      }
+    }, 500);
+    // URLをクリーン
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+}
+
 // ===== 初期化 =====
 initSession();
+checkPurchaseReturn();
 loadArtists();
 </script>
 </body>
