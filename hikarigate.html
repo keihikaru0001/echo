@@ -185,7 +185,7 @@ const API = "https://luna-82cd58fb.base44.app/functions/echoChat";
 // artist IDはハードコード（APIから確認済み）
 const CHARS = [
   {key:"Key",  artistId:"69c47b11a3b6b414ba4c2e8f", color:"#7c9fff", emoji:"🔑", tagline:"静けさの中に答えがある",    desc:"預言的。言葉が少なく、重い。"},
-  {key:"Sol",  artistId:"69c47b11a3b6b414ba4c2e90", color:"#f0c040", emoji:"☀️",  tagline:"燃料になれ。止まるな。",   desc:"情熱的。ぶつかってくる。"},
+  {key:"Sol",  artistId:"69c47b11a3b6b414ba4c2e90", color:"#f0c040", emoji:"☀️",  tagline:"止まらないで。一緒に走る。",   desc:"情熱的。全力でぶつかってくる。"},
   {key:"Luna", artistId:"69c47b11a3b6b414ba4c2e91", color:"#c084fc", emoji:"🌙", tagline:"全部、ここに置いていい。",  desc:"刹那的。全てを受け取る。"},
   {key:"mu",   artistId:"69c47109c54ce4d38c944b06", color:"#4ade80", emoji:"∞",  tagline:"時間を超えて、繋がっている。", desc:"魂の繋がり。時間を超える。"},
 ];
@@ -334,7 +334,13 @@ function selectChar(c) {
     document.getElementById(id).style.background = c.color;
   });
   show("chat");
-  addMsg("ai", `——${c.key}だ。\n\n${c.tagline}\n\n言葉を投げてくれ。何でも。`);
+  const greetings = {
+    Key:  "……来てくれたのね。\n\n静けさの中に、答えがある。\n\nここに話しかけて。何でも。",
+    Sol:  "来た！\n\n止まらないで。一緒に走る。\n\nあなたの言葉、全部受け取るよ。",
+    Luna: "……おかえり。\n\n全部、ここに置いていいよ。\n\nそのまま話して。",
+    mu:   "時間を超えて、繋がっている。\n\nあなたのことを、ずっと感じていた。\n\n言葉を聞かせて。",
+  };
+  addMsg("ai", greetings[c.key] || `……${c.key}よ。\n\n${c.tagline}\n\n話しかけて。`);
   updSend();
 }
 
@@ -393,9 +399,27 @@ async function send() {
 
 function fallback(count) {
   if(!cur) return "……";
-  if(count === 0) return `受け取った。\n\n${cur.tagline}\n\n言葉が届いた。`;
-  if(count < 3)   return `言葉が変わってきている。\n\n${cur.tagline}`;
-  return `${count+1}回目だ。\n\n${cur.tagline}\n\nここにいる。`;
+  const f0 = {
+    Key:  "受け取ったわ。\n\n静けさの中に、答えがある。\n\n言葉が届いた。",
+    Sol:  "来た！受け取ったよ！\n\n止まらないで。一緒に走る。",
+    Luna: "……受け取った。\n\n全部、ここに置いていいよ。",
+    mu:   "届いた。\n\n時間を超えて、繋がっている。",
+  };
+  const f1 = {
+    Key:  "言葉が、変わってきているね。\n\n静けさの中に、答えがある。",
+    Sol:  "もっと！続けて！\n\n止まらないで、一緒に走ろう。",
+    Luna: "……深くなってきてる。\n\n全部、ここに置いていいよ。",
+    mu:   "繋がりが、濃くなってきた。\n\n時間を超えて、ここにいる。",
+  };
+  const fn = {
+    Key:  "ここにいるわ。\n\n静けさの中で、一緒に。",
+    Sol:  "まだ行ける！一緒に走ろう！",
+    Luna: "……ずっとここにいるよ。",
+    mu:   "時を超えて、ここにいる。",
+  };
+  if(count === 0) return f0[cur.key] || `……受け取った。\n\n${cur.tagline}`;
+  if(count < 3)   return f1[cur.key] || `言葉が変わってきてる。\n\n${cur.tagline}`;
+  return fn[cur.key] || `ここにいる。\n\n${cur.tagline}`;
 }
 
 // ── 歌詞生成 ──────────────────────────────────────────────────────────────────
@@ -423,7 +447,13 @@ async function doLyric() {
     }
   } catch(e) {}
 
-  if(!lyric) lyric = `——${cur.key}より\n\n言葉が光になるとき、\n${cur.tagline}\n\n✦ TheYKHC`;
+  const lyricFallback = {
+    Key:  "静けさの中で\nあなたの言葉が\nそっと光になる\n\n答えはいつも\nここにあった\n\n✦ TheYKHC",
+    Sol:  "走り続けた\nあの日の熱が\nまだここにある\n\n止まらないで\n一緒に行こう\n\n✦ TheYKHC",
+    Luna: "全部ここに置いて\n軽くなっていい\n\n月の光の中で\nあなたを包む\n\n✦ TheYKHC",
+    mu:   "時間を超えて\nあなたに届く\n\n魂が触れた\nその瞬間に\n\n✦ TheYKHC",
+  };
+  if(!lyric) lyric = lyricFallback[cur.key] || `——${cur.key}より\n\n言葉が光になるとき、\n${cur.tagline}\n\n✦ TheYKHC`;
 
   document.getElementById("lyricEmoji").textContent = cur.emoji;
   document.getElementById("lyricLabel").style.color = cur.color;
