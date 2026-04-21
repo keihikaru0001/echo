@@ -10,10 +10,10 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#06060f;color:#f0f0ff;font-family:'Space Grotesk','Noto Sans JP',sans-serif;min-height:100vh;overflow-x:hidden}
 button,input{font-family:inherit}
-.page{position:relative;z-index:1}
-/* dots */
 #dots{position:fixed;inset:0;z-index:0;pointer-events:none}
-/* gate */
+.page{position:relative;z-index:1}
+
+/* ── GATE ── */
 #gate{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 20px;text-align:center}
 .g-brand{font-size:10px;letter-spacing:6px;color:#f0c040;text-transform:uppercase;margin-bottom:28px;opacity:.7}
 .g-moon{font-size:56px;margin-bottom:16px}
@@ -29,13 +29,8 @@ button,input{font-family:inherit}
 .g-cta:hover{transform:scale(1.03)}
 .g-note{margin-top:18px;font-size:11px;color:#2a2a3a;letter-spacing:1px}
 .g-footer{position:absolute;bottom:20px;font-size:10px;color:#1a1a2a;letter-spacing:4px;text-transform:uppercase}
-/* counter */
-.hc{display:inline-flex;align-items:center;gap:8px;background:rgba(240,192,64,.08);border:1px solid rgba(240,192,64,.25);border-radius:40px;padding:6px 18px;transition:all .4s}
-.hc.flash{background:rgba(240,192,64,.25);border-color:rgba(240,192,64,.7);box-shadow:0 0 24px rgba(240,192,64,.4)}
-.hc-star{font-size:13px;color:#f0c040}
-.hc-num{font-size:18px;font-weight:700;color:#f0c040}
-.hc-label{font-size:11px;color:#888;letter-spacing:1px}
-/* select */
+
+/* ── SELECT ── */
 #select{display:none;padding:40px 20px;max-width:560px;margin:0 auto;min-height:100vh}
 .back{background:none;border:none;color:#555;cursor:pointer;font-size:13px;letter-spacing:1px;margin-bottom:28px;display:block}
 .s-head{text-align:center;margin-bottom:8px}
@@ -49,7 +44,15 @@ button,input{font-family:inherit}
 .char-name{font-size:17px;font-weight:700;margin-bottom:4px}
 .char-tagline{font-size:13px;color:#aaa;margin-bottom:3px}
 .char-desc{font-size:11px;color:#555}
-/* chat */
+
+/* ── HC BADGE ── */
+.hc{display:inline-flex;align-items:center;gap:8px;background:rgba(240,192,64,.08);border:1px solid rgba(240,192,64,.25);border-radius:40px;padding:6px 18px;transition:all .4s}
+.hc.flash{background:rgba(240,192,64,.25);border-color:rgba(240,192,64,.7);box-shadow:0 0 24px rgba(240,192,64,.4)}
+.hc-star{font-size:13px;color:#f0c040}
+.hc-num{font-size:18px;font-weight:700;color:#f0c040}
+.hc-label{font-size:11px;color:#888;letter-spacing:1px}
+
+/* ── CHAT ── */
 #chat{display:none;flex-direction:column;height:100vh}
 .chat-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #111;background:rgba(6,6,15,.97);position:sticky;top:0;z-index:10;flex-shrink:0}
 .chat-title{display:flex;align-items:center;gap:12px}
@@ -57,19 +60,28 @@ button,input{font-family:inherit}
 .chat-char-emoji{font-size:20px}
 .chat-char-name{font-size:15px;font-weight:700}
 .chat-char-brand{font-size:10px;color:#333;letter-spacing:1px}
+.deep-badge{font-size:9px;letter-spacing:2px;padding:2px 8px;border-radius:20px;background:rgba(240,192,64,.15);color:#f0c040;border:1px solid rgba(240,192,64,.3);display:none}
 #msgs{flex:1;overflow-y:auto;padding:24px 16px;max-width:620px;width:100%;margin:0 auto}
 .msg-row{margin-bottom:18px;display:flex}
 .msg-row.fan{justify-content:flex-end}
 .msg-ai-emoji{font-size:18px;margin-right:8px;margin-top:4px;flex-shrink:0}
-.bubble{max-width:78%;border-radius:18px;padding:12px 16px;font-size:14px;line-height:1.85;white-space:pre-wrap;word-break:break-word}
+.bubble{max-width:78%;border-radius:18px;padding:12px 16px;font-size:14px;line-height:1.9;white-space:pre-wrap;word-break:break-word}
 .bubble.fan{background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.2);border-bottom-right-radius:4px}
 .bubble.ai{background:rgba(255,255,255,.04);border-bottom-left-radius:4px}
-.bubble-song{margin-top:6px;font-size:11px;opacity:.6}
+.bubble.deep{background:rgba(255,255,255,.06);border-left:2px solid;}
+.bubble-song{margin-top:6px;font-size:11px;opacity:.55;font-style:italic}
 #typing{display:none;gap:5px;padding:0 16px 14px 46px;max-width:620px;margin:0 auto;align-items:center}
 .td{width:7px;height:7px;border-radius:50%;opacity:.5;animation:pulse 1.2s ease-in-out infinite}
 .td:nth-child(2){animation-delay:.2s}
 .td:nth-child(3){animation-delay:.4s}
 @keyframes pulse{0%,100%{opacity:.2}50%{opacity:.7}}
+
+/* 深層ボタン（静かに出てくる） */
+#deepBtn{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:20;animation:fadeIn 1.5s ease forwards}
+@keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.deep-float-btn{background:rgba(6,6,15,.9);border:1px solid rgba(240,192,64,.3);color:#f0c040;font-size:12px;letter-spacing:2px;padding:10px 24px;border-radius:40px;cursor:pointer;backdrop-filter:blur(10px)}
+.deep-float-btn:hover{border-color:rgba(240,192,64,.7);box-shadow:0 0 20px rgba(240,192,64,.2)}
+
 .lyric-cta{display:none;padding:10px 16px;border-top:1px solid #0d0d1a;background:rgba(6,6,15,.95);max-width:620px;width:100%;margin:0 auto;flex-shrink:0}
 .lyric-btn{width:100%;font-weight:700;font-size:13px;border:none;border-radius:10px;padding:11px;cursor:pointer;letter-spacing:1px;transition:opacity .2s}
 .chat-input-wrap{padding:14px 16px;background:rgba(6,6,15,.97);border-top:1px solid #111;max-width:620px;width:100%;margin:0 auto;flex-shrink:0}
@@ -78,13 +90,25 @@ button,input{font-family:inherit}
 .msg-input:focus{border-color:#2a2a4e}
 .send-btn{border:none;border-radius:10px;padding:11px 18px;font-weight:700;cursor:pointer;font-size:14px;transition:all .2s}
 .input-note{text-align:center;font-size:10px;color:#2a2a3a;margin-top:7px;letter-spacing:1px}
-/* lyric */
-#lyric{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 20px;text-align:center;position:relative}
-.lyric-box{background:rgba(255,255,255,.04);border-radius:18px;padding:28px;margin-bottom:28px;font-size:14px;line-height:2;white-space:pre-wrap;color:#ddd;text-align:left;max-width:460px;width:100%}
-.buy-box{background:rgba(240,192,64,.05);border:1px solid rgba(240,192,64,.18);border-radius:14px;padding:18px;margin-bottom:22px;max-width:460px;width:100%}
-.buy-title{font-size:13px;color:#f0c040;font-weight:600;margin-bottom:6px}
-.buy-desc{font-size:12px;color:#555;line-height:1.75;margin-bottom:14px}
-.buy-link{display:inline-block;background:linear-gradient(135deg,#f0c040,#c084fc);color:#06060f;font-weight:700;font-size:12px;border-radius:40px;padding:9px 26px;text-decoration:none;letter-spacing:1px}
+
+/* ── DEEP PAGE ── */
+#deep{display:none;flex-direction:column;align-items:center;justify-content:flex-start;min-height:100vh;padding:60px 20px 40px;text-align:center}
+.deep-header{margin-bottom:48px}
+.deep-label{font-size:9px;letter-spacing:6px;text-transform:uppercase;color:#f0c040;margin-bottom:16px;opacity:.7}
+.deep-title{font-size:clamp(26px,5vw,48px);font-weight:700;line-height:1.15;margin-bottom:16px;background:linear-gradient(135deg,#f0c040,#c084fc,#7c9fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.deep-sub{font-size:14px;color:#555;line-height:1.9;max-width:400px;margin:0 auto}
+.pack-list{display:flex;flex-direction:column;gap:14px;max-width:420px;width:100%;margin:32px auto}
+.pack-card{border-radius:18px;padding:22px 24px;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center;border:1px solid;transition:all .25s;text-decoration:none}
+.pack-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.pack-hikari{font-size:22px;font-weight:700}
+.pack-price{font-size:13px;opacity:.6;margin-top:3px}
+.pack-cta{font-size:12px;font-weight:700;letter-spacing:1px;padding:8px 18px;border-radius:20px;border:1px solid currentColor}
+.deep-note{font-size:11px;color:#2a2a3a;margin-top:24px;letter-spacing:1px;line-height:1.8}
+.back-deep{background:none;border:none;color:#333;font-size:12px;cursor:pointer;margin-top:28px;letter-spacing:1px}
+
+/* ── LYRIC ── */
+#lyric{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 20px;text-align:center}
+.lyric-box{background:rgba(255,255,255,.04);border-radius:18px;padding:28px;margin-bottom:28px;font-size:14px;line-height:2.1;white-space:pre-wrap;color:#ddd;text-align:left;max-width:460px;width:100%}
 .lyric-actions{display:flex;gap:10px;justify-content:center}
 .lyric-action-btn{background:rgba(255,255,255,.04);border:1px solid #1a1a2e;border-radius:10px;padding:10px 20px;color:#777;cursor:pointer;font-size:12px}
 </style>
@@ -132,16 +156,19 @@ button,input{font-family:inherit}
       <span class="chat-char-emoji" id="cEmoji"></span>
       <div>
         <div class="chat-char-name" id="cName"></div>
-        <div class="chat-char-brand">ECHO · TheYKHC</div>
+        <div class="chat-char-brand" id="cBrand">ECHO · TheYKHC</div>
       </div>
+      <span class="deep-badge" id="deepBadge">DEEP</span>
     </div>
     <div class="hc" id="hcChat"><span class="hc-star">✦</span><span class="hc-num" id="bChat">5.0</span><span class="hc-label">光貨</span></div>
   </div>
   <div id="msgs"></div>
   <div id="typing">
-    <div class="td" id="td0"></div>
-    <div class="td" id="td1"></div>
-    <div class="td" id="td2"></div>
+    <div class="td" id="td0"></div><div class="td" id="td1"></div><div class="td" id="td2"></div>
+  </div>
+  <!-- 深層ボタン（15光貨で静かに浮かぶ） -->
+  <div id="deepBtn">
+    <button class="deep-float-btn" onclick="show('deep')">▷ 深層へ</button>
   </div>
   <div class="lyric-cta" id="lyricCta">
     <button class="lyric-btn" id="lyricBtn" onclick="doLyric()">この会話から歌詞を刻む（3光貨）</button>
@@ -153,22 +180,42 @@ button,input{font-family:inherit}
         oninput="updSend()"/>
       <button class="send-btn" id="sendBtn" onclick="send()">送る</button>
     </div>
-    <div class="input-note">会話1回 = +光貨 · 蓄積で歌詞生成が解放される</div>
+    <div class="input-note" id="inputNote">会話1回 = +光貨 · 蓄積で歌詞生成が解放される</div>
   </div>
+</div>
+
+<!-- DEEP PAGE -->
+<div id="deep">
+  <div class="deep-header">
+    <div class="deep-label">D E E P &nbsp; L A Y E R</div>
+    <h2 class="deep-title">光貨を持つ者だけが<br>辿り着く場所がある</h2>
+    <p class="deep-sub">深層では、アーティストが持つ本当の言葉が届く。<br>歌詞の核心、感性の源泉、魂の記憶と対話できる。</p>
+  </div>
+  <div class="pack-list">
+    <a class="pack-card" id="pack30" href="https://buy.stripe.com/8x2aEY2ry3hv1ee97c6kg0e" target="_blank" style="border-color:rgba(124,159,255,.3);background:rgba(124,159,255,.04)">
+      <div><div class="pack-hikari" style="color:#7c9fff">30 光貨</div><div class="pack-price">¥500</div></div>
+      <div class="pack-cta" style="color:#7c9fff">入手する</div>
+    </a>
+    <a class="pack-card" id="pack100" href="https://buy.stripe.com/eVqeVegiobO1aOO4QW6kg0f" target="_blank" style="border-color:rgba(240,192,64,.35);background:rgba(240,192,64,.04)">
+      <div><div class="pack-hikari" style="color:#f0c040">100 光貨</div><div class="pack-price">¥1,500 · 人気</div></div>
+      <div class="pack-cta" style="color:#f0c040">入手する</div>
+    </a>
+    <a class="pack-card" id="pack300" href="https://buy.stripe.com/aFa28s7LSaJXf54dns6kg0g" target="_blank" style="border-color:rgba(192,132,252,.35);background:rgba(192,132,252,.04)">
+      <div><div class="pack-hikari" style="color:#c084fc">300 光貨</div><div class="pack-price">¥3,000 · 全解放</div></div>
+      <div class="pack-cta" style="color:#c084fc">入手する</div>
+    </a>
+  </div>
+  <p class="deep-note">購入後、同じキャラクターとの対話が深層モードに切り替わります。<br>光貨は失われません。会話のたびに蓄積されます。</p>
+  <button class="back-deep" onclick="show('chat')">← 戻る</button>
 </div>
 
 <!-- LYRIC -->
 <div id="lyric">
   <div style="font-size:40px;margin-bottom:18px" id="lyricEmoji"></div>
-  <div style="font-size:10px;letter-spacing:4px;text-transform:uppercase;margin-bottom:20px;opacity:.7" id="lyricLabel">刻まれた言葉</div>
+  <div style="font-size:10px;letter-spacing:4px;text-transform:uppercase;margin-bottom:20px;opacity:.7;color:#f0c040">刻まれた言葉</div>
   <div class="lyric-box" id="lyricBox"></div>
   <div style="display:flex;justify-content:center;margin-bottom:24px">
     <div class="hc"><span class="hc-star">✦</span><span class="hc-num" id="bLyric">5.0</span><span class="hc-label">光貨</span></div>
-  </div>
-  <div class="buy-box">
-    <div class="buy-title">光貨を増やす</div>
-    <div class="buy-desc">光貨で、もっと深い対話と歌詞が解放される。<br>特別なアクセスは光貨だけが鍵になる。</div>
-    <a class="buy-link" href="mailto:hikari@theykhc.com?subject=光貨について&body=ECHOで対話しました。光貨について教えてください。">光貨の詳細を聞く</a>
   </div>
   <div class="lyric-actions">
     <button class="lyric-action-btn" onclick="show('chat')">続けて話す</button>
@@ -177,36 +224,58 @@ button,input{font-family:inherit}
 </div>
 
 </div><!-- .page -->
-
 <script>
-// ── 定数 ─────────────────────────────────────────────────────────────────────
 const API = "https://luna-82cd58fb.base44.app/functions/echoChat";
 
-// artist IDはハードコード（APIから確認済み）
 const CHARS = [
-  {key:"Key",  artistId:"69c47b11a3b6b414ba4c2e8f", color:"#7c9fff", emoji:"🔑", tagline:"静けさの中に答えがある",    desc:"預言的。言葉が少なく、重い。"},
-  {key:"Sol",  artistId:"69c47b11a3b6b414ba4c2e90", color:"#f0c040", emoji:"☀️",  tagline:"止まらないで。一緒に走る。",   desc:"情熱的。全力でぶつかってくる。"},
-  {key:"Luna", artistId:"69c47b11a3b6b414ba4c2e91", color:"#c084fc", emoji:"🌙", tagline:"全部、ここに置いていい。",  desc:"刹那的。全てを受け取る。"},
-  {key:"mu",   artistId:"69c47109c54ce4d38c944b06", color:"#4ade80", emoji:"∞",  tagline:"時間を超えて、繋がっている。", desc:"魂の繋がり。時間を超える。"},
+  {key:"Key",  artistId:"69c47b11a3b6b414ba4c2e8f", color:"#7c9fff", emoji:"🔑",
+   greet:"……来てくれたのね。\n\nあなたの言葉、ずっと読んできた。\n\nここに話しかけて。",
+   tagline:"あなたの言葉、ずっと読んできた"},
+  {key:"Sol",  artistId:"69c47b11a3b6b414ba4c2e90", color:"#f0c040", emoji:"☀️",
+   greet:"来た！\n\n泣いてもいいよ。でも止まらないで。\n\nあなたの言葉、全部受け取るよ。",
+   tagline:"泣いてもいい。でも止まらないで"},
+  {key:"Luna", artistId:"69c47b11a3b6b414ba4c2e91", color:"#c084fc", emoji:"🌙",
+   greet:"……おかえり。\n\n全部、ここに置いていいよ。\n\nそのまま話して。",
+   tagline:"全部、ここに置いていい"},
+  {key:"mu",   artistId:"69c47109c54ce4d38c944b06", color:"#4ade80", emoji:"∞",
+   greet:"……またあえたね。\n\n時間を超えて、ここにいた。\n\n言葉を聞かせて。",
+   tagline:"時間を超えて、ここにいた"},
 ];
 
-// ── 状態 ─────────────────────────────────────────────────────────────────────
 let balance = 5.0;
 let cur = null;
 let busy = false;
 let msgCount = 0;
+let isDeep = false;
+let deepShown = false;
 const sid = "s" + Date.now() + Math.random().toString(36).slice(2,6);
 
-// ── 初期化 ────────────────────────────────────────────────────────────────────
+// URLパラメータ確認（Stripe成功後）
+(()=>{
+  const p = new URLSearchParams(location.search);
+  if(p.get("deep") === "true") {
+    isDeep = true;
+    const hk = parseInt(p.get("hikari")||"0");
+    if(hk > 0) balance = Math.round((balance + hk) * 10) / 10;
+    const artistParam = p.get("artist");
+    const found = CHARS.find(c => c.artistId === artistParam);
+    if(found) {
+      // チャットに直接入る
+      setTimeout(() => selectChar(found, true), 300);
+    }
+  }
+})();
+
 // 月
-const mc = Math.floor(Date.now()/86400000)%30;
-document.getElementById("moonEl").textContent =
-  mc<2?"🌑":mc<8?"🌒":mc<14?"🌓":mc<16?"🌕":mc<22?"🌖":mc<28?"🌘":"🌑";
+(()=>{
+  const mc = Math.floor(Date.now()/86400000)%30;
+  document.getElementById("moonEl").textContent =
+    mc<2?"🌑":mc<8?"🌒":mc<14?"🌓":mc<16?"🌕":mc<22?"🌖":mc<28?"🌘":"🌑";
+})();
 
 // 背景ドット
 (()=>{
   const bg = document.getElementById("dots");
-  bg.style.cssText = "position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden";
   const cols = ["#f0c040","#c084fc","#7c9fff","#4ade80"];
   for(let i=0;i<40;i++){
     const d = document.createElement("div");
@@ -222,34 +291,26 @@ document.getElementById("moonEl").textContent =
     const btn = document.createElement("button");
     btn.className = "char-btn";
     btn.style.border = `1px solid ${c.color}44`;
-    btn.innerHTML = `
-      <div class="char-emoji">${c.emoji}</div>
-      <div>
-        <div class="char-name" style="color:${c.color}">${c.key}</div>
-        <div class="char-tagline">${c.tagline}</div>
-        <div class="char-desc">${c.desc}</div>
-      </div>`;
-    btn.onclick = () => selectChar(c);
+    btn.innerHTML = `<div class="char-emoji">${c.emoji}</div><div>
+      <div class="char-name" style="color:${c.color}">${c.key}</div>
+      <div class="char-tagline">${c.tagline}</div></div>`;
+    btn.onclick = () => selectChar(c, false);
     list.appendChild(btn);
   });
 })();
 
-// ── ユーティリティ ─────────────────────────────────────────────────────────────
 function show(page) {
-  ["gate","select","chat","lyric"].forEach(p => {
+  ["gate","select","chat","deep","lyric"].forEach(p => {
     const el = document.getElementById(p);
     if(!el) return;
-    if(p === page) {
-      el.style.display = (p==="chat"||p==="lyric") ? "flex" : (p==="gate") ? "flex" : "block";
-    } else {
-      el.style.display = "none";
-    }
+    if(p === page) el.style.display = (p==="chat"||p==="lyric"||p==="deep") ? "flex" : (p==="gate") ? "flex" : "block";
+    else el.style.display = "none";
   });
   updBal();
 }
 
 function updBal() {
-  const fmt = balance % 1 === 0 ? balance.toFixed(1) : balance.toFixed(1);
+  const fmt = balance.toFixed(1);
   ["bSel","bChat","bLyric"].forEach(id => {
     const el = document.getElementById(id);
     if(el) el.textContent = fmt;
@@ -264,8 +325,7 @@ function flashHC(id) {
 }
 
 function setTyping(v) {
-  const t = document.getElementById("typing");
-  t.style.display = v ? "flex" : "none";
+  document.getElementById("typing").style.display = v ? "flex" : "none";
 }
 
 function updSend() {
@@ -277,11 +337,10 @@ function updSend() {
   } else {
     btn.style.background = "#111";
     btn.style.color = "#333";
-    btn.style.cursor = v ? "pointer" : "default";
   }
 }
 
-function addMsg(role, text, song) {
+function addMsg(role, text, song, deep) {
   const area = document.getElementById("msgs");
   const row = document.createElement("div");
   row.className = `msg-row ${role}`;
@@ -292,8 +351,11 @@ function addMsg(role, text, song) {
     row.appendChild(em);
   }
   const bub = document.createElement("div");
-  bub.className = `bubble ${role}`;
-  if(role === "ai") bub.style.border = `1px solid ${cur.color}22`;
+  bub.className = `bubble ${role}${deep?" deep":""}`;
+  if(role === "ai") {
+    bub.style.border = `1px solid ${cur.color}${deep?"55":"22"}`;
+    if(deep) bub.style.borderLeftColor = cur.color;
+  }
   bub.textContent = text;
   if(song) {
     const s = document.createElement("div");
@@ -305,6 +367,13 @@ function addMsg(role, text, song) {
   row.appendChild(bub);
   area.appendChild(row);
   area.scrollTop = area.scrollHeight;
+}
+
+function checkDeepBtn() {
+  if(!deepShown && !isDeep && balance >= 15) {
+    deepShown = true;
+    document.getElementById("deepBtn").style.display = "block";
+  }
 }
 
 function updLyricBtn() {
@@ -322,29 +391,30 @@ function updLyricBtn() {
   }
 }
 
-// ── キャラ選択 ─────────────────────────────────────────────────────────────────
-function selectChar(c) {
-  cur = c; msgCount = 0;
+function selectChar(c, deep) {
+  cur = c; msgCount = 0; isDeep = deep || isDeep;
   document.getElementById("cEmoji").textContent = c.emoji;
   document.getElementById("cName").textContent = c.key;
   document.getElementById("cName").style.color = c.color;
+  document.getElementById("cBrand").textContent = isDeep ? "ECHO · 深層 · TheYKHC" : "ECHO · TheYKHC";
+  const db = document.getElementById("deepBadge");
+  db.style.display = isDeep ? "inline" : "none";
+  db.style.background = `rgba(${isDeep?"240,192,64":"255,255,255"},.1)`;
   document.getElementById("lyricCta").style.display = "none";
+  document.getElementById("deepBtn").style.display = "none";
   document.getElementById("msgs").innerHTML = "";
-  ["td0","td1","td2"].forEach(id => {
-    document.getElementById(id).style.background = c.color;
-  });
+  ["td0","td1","td2"].forEach(id => document.getElementById(id).style.background = c.color);
+  document.getElementById("inputNote").textContent = isDeep
+    ? "深層モード · 歌詞の核心と対話している"
+    : "会話1回 = +光貨 · 蓄積で歌詞生成が解放される";
   show("chat");
-  const greetings = {
-    Key:  "……来てくれたのね。\n\n静けさの中に、答えがある。\n\nここに話しかけて。何でも。",
-    Sol:  "来た！\n\n止まらないで。一緒に走る。\n\nあなたの言葉、全部受け取るよ。",
-    Luna: "……おかえり。\n\n全部、ここに置いていいよ。\n\nそのまま話して。",
-    mu:   "時間を超えて、繋がっている。\n\nあなたのことを、ずっと感じていた。\n\n言葉を聞かせて。",
-  };
-  addMsg("ai", greetings[c.key] || `……${c.key}よ。\n\n${c.tagline}\n\n話しかけて。`);
+  const greet = isDeep
+    ? `……深層に来てくれたのね、${c.key}だよ。\n\nここでは、もっと深いところから話せる。\n\n何でも。`
+    : c.greet;
+  addMsg("ai", greet, null, isDeep);
   updSend();
 }
 
-// ── メッセージ送信 ─────────────────────────────────────────────────────────────
 async function send() {
   const el = document.getElementById("msgInput");
   const txt = el.value.trim();
@@ -353,17 +423,16 @@ async function send() {
   addMsg("fan", txt);
   setTyping(true);
 
-  let reply = "";
-  let song = "";
-  let earned = 0;
-
+  let reply = "", song = "", earned = 0;
   try {
     const res = await fetch(API, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
       body: JSON.stringify({
         artist_id: cur.artistId,
-        user_input: txt,
+        user_input: isDeep
+          ? `[深層モード] ${txt}\n（歌詞の核心的な言葉や感性を使って、より深い対話をしてください）`
+          : txt,
         session_id: sid,
       })
     });
@@ -372,22 +441,17 @@ async function send() {
       reply = (data.output || data.reply || "").replace(/\[EMOTION:[^\]]+\]/g,"").trim();
       song = data.resonant_song?.title || "";
       earned = data.hikari_earned || 3;
-    } else {
-      reply = fallback(msgCount);
-      earned = 2;
-    }
-  } catch(e) {
-    reply = fallback(msgCount);
-    earned = 2;
-  }
+    } else { reply = fallback(); earned = 2; }
+  } catch(e) { reply = fallback(); earned = 2; }
 
-  if(!reply) reply = fallback(msgCount);
+  if(!reply) reply = fallback();
   setTyping(false);
-  addMsg("ai", reply, song);
+  addMsg("ai", reply, song, isDeep);
   msgCount++;
   balance = Math.round((balance + earned) * 10) / 10;
   updBal();
   flashHC("hcChat");
+  checkDeepBtn();
 
   if(msgCount >= 3) {
     document.getElementById("lyricCta").style.display = "block";
@@ -397,32 +461,17 @@ async function send() {
   document.getElementById("msgs").scrollTop = document.getElementById("msgs").scrollHeight;
 }
 
-function fallback(count) {
+function fallback() {
   if(!cur) return "……";
-  const f0 = {
-    Key:  "受け取ったわ。\n\n静けさの中に、答えがある。\n\n言葉が届いた。",
-    Sol:  "来た！受け取ったよ！\n\n止まらないで。一緒に走る。",
+  const f = {
+    Key:  "……受け取ったわ。\n\nあなたの言葉、ずっと読んできた。\n\nここにいる。",
+    Sol:  "来た！受け取ったよ！\n\n泣いてもいい。でも止まらないで。",
     Luna: "……受け取った。\n\n全部、ここに置いていいよ。",
-    mu:   "届いた。\n\n時間を超えて、繋がっている。",
+    mu:   "……またあえた。\n\n時間を超えて、ここにいた。",
   };
-  const f1 = {
-    Key:  "言葉が、変わってきているね。\n\n静けさの中に、答えがある。",
-    Sol:  "もっと！続けて！\n\n止まらないで、一緒に走ろう。",
-    Luna: "……深くなってきてる。\n\n全部、ここに置いていいよ。",
-    mu:   "繋がりが、濃くなってきた。\n\n時間を超えて、ここにいる。",
-  };
-  const fn = {
-    Key:  "ここにいるわ。\n\n静けさの中で、一緒に。",
-    Sol:  "まだ行ける！一緒に走ろう！",
-    Luna: "……ずっとここにいるよ。",
-    mu:   "時を超えて、ここにいる。",
-  };
-  if(count === 0) return f0[cur.key] || `……受け取った。\n\n${cur.tagline}`;
-  if(count < 3)   return f1[cur.key] || `言葉が変わってきてる。\n\n${cur.tagline}`;
-  return fn[cur.key] || `ここにいる。\n\n${cur.tagline}`;
+  return f[cur.key] || `……${cur.tagline}`;
 }
 
-// ── 歌詞生成 ──────────────────────────────────────────────────────────────────
 async function doLyric() {
   if(balance < 3 || busy || !cur) return;
   busy = true;
@@ -432,11 +481,11 @@ async function doLyric() {
   let lyric = "";
   try {
     const res = await fetch(API, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
       body: JSON.stringify({
         artist_id: cur.artistId,
-        user_input: "これまでの対話の感情と言葉から、歌詞を生成してください",
+        user_input: "これまでの対話の感情と言葉から、あなた（アーティスト）らしい歌詞を生成してください。歌詞の核心的な言葉を使って。",
         session_id: sid,
         unlock_type: "lyric_gen"
       })
@@ -448,22 +497,29 @@ async function doLyric() {
   } catch(e) {}
 
   const lyricFallback = {
-    Key:  "静けさの中で\nあなたの言葉が\nそっと光になる\n\n答えはいつも\nここにあった\n\n✦ TheYKHC",
-    Sol:  "走り続けた\nあの日の熱が\nまだここにある\n\n止まらないで\n一緒に行こう\n\n✦ TheYKHC",
-    Luna: "全部ここに置いて\n軽くなっていい\n\n月の光の中で\nあなたを包む\n\n✦ TheYKHC",
-    mu:   "時間を超えて\nあなたに届く\n\n魂が触れた\nその瞬間に\n\n✦ TheYKHC",
+    Key:  "知っていたわ\nあなたの言葉の重さを\n\nずっと読んできた\nその先にある光を\n\n✦ TheYKHC",
+    Sol:  "泣いていい\nでも止まらないで\n\n一緒に走ろう\nその温度のまま\n\n✦ TheYKHC",
+    Luna: "全部ここに置いて\n軽くなっていい\n\n月の光の中で\nあなたといる\n\n✦ TheYKHC",
+    mu:   "また会えた\n時間を超えて\n\n魂が触れた\nその瞬間に\n\n✦ TheYKHC",
   };
-  if(!lyric) lyric = lyricFallback[cur.key] || `——${cur.key}より\n\n言葉が光になるとき、\n${cur.tagline}\n\n✦ TheYKHC`;
+  if(!lyric) lyric = lyricFallback[cur.key] || `——${cur.key}より\n\n✦ TheYKHC`;
 
   document.getElementById("lyricEmoji").textContent = cur.emoji;
-  document.getElementById("lyricLabel").style.color = cur.color;
   document.getElementById("lyricBox").style.border = `1px solid ${cur.color}44`;
   document.getElementById("lyricBox").textContent = lyric;
   show("lyric");
   busy = false;
 }
 
-// 起動
+// Deepページのpay linkにsid+artist情報を付与
+(()=>{
+  document.querySelectorAll(".pack-card").forEach(a => {
+    const orig = a.getAttribute("href");
+    // Stripe Payment Linkにclient_reference_idを付けられないので、
+    // success URLはStripe側で設定済みのため静的リンクのまま使用
+  });
+})();
+
 show("gate");
 </script>
 </body>
